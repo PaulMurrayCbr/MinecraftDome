@@ -6,6 +6,8 @@ console.log("Dome.js start");
 $(function() {
   console.log("initialization");
   $("body")[0].controller = new App($("body")[0]);
+  
+  $("body")[0].controller.init();
 });
 
 function ctl(e) {
@@ -19,10 +21,15 @@ function ctl(e) {
 function App(element) {
   this.element = element;
   this.maskHidden = false;
-  
-  $(element).find(".surface-mask .mask-display canvas").resizable();
 }
 
+App.prototype.init = function() {
+  $(this.element).find(".surface-mask .mask-display canvas").resizable();
+  
+  $(this.element).find(".surface-mask .mask-display canvas").mouseover($.proxy(this.maskMouseover, this));
+  $(this.element).find(".surface-mask .mask-display canvas").mouseover($.proxy(this.maskMouseout, this));
+  $(this.element).find(".surface-mask .mask-display canvas").mousemove($.proxy(this.maskMousemove, this));
+}
 
 App.prototype.addLayer = function() {
   var layer = $(this.element).find(".layer.template").clone(true, true);
@@ -41,6 +48,14 @@ App.prototype.hideShowMask = function() {
   $(this.element).find(".surface-mask .hideshow > span").html(this.maskHidden ? "Closed" : "Open");
 }
 
+App.prototype.maskMouseover = function(event) {
+}
+
+App.prototype.maskMouseout = function(event) {
+}
+
+App.prototype.maskMousemove = function(event) {
+}
 
 var layeridx = 1;
 
@@ -67,8 +82,24 @@ function Layer(element) {
 
 Layer.prototype.init = function() {
   $(this.element).find(".layer-display canvas").resizable();
+  
+  $(this.element).find(".layer-display canvas").mouseover($.proxy(this.canvasMouseover, this));
+  $(this.element).find(".layer-display canvas").mouseover($.proxy(this.canvasMouseout, this));
+  $(this.element).find(".layer-display canvas").mousemove($.proxy(this.canvasMousemove, this));
+  
 }
 
+Layer.prototype.canvasMouseover = function(event) {
+  console.log(this.idx);
+}
+
+Layer.prototype.canvasMouseout = function(event) {
+  console.log(this.idx);
+}
+
+Layer.prototype.canvasMousemove = function(event) {
+  console.log(this.idx);
+}
 
 Layer.prototype.b = function(x,y,v) {
   if(!this.blocks[y] && !v) return;
