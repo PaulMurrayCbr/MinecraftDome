@@ -4,6 +4,10 @@
 <title>Minecraft Dome</title>
 
 <link rel="stylesheet" href="Dome.css">
+
+<link rel="stylesheet" href="lib/themes/base/all.css">
+
+
 <meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -18,8 +22,11 @@
 <div class="surface-mask">
 Surface mask
 <span class="spanbutton hideshow" onclick="ctl(this).hideShowMask()"><span>Open</span></span>
-<div class="content">
-<canvas></canvas>
+<div class="content ">
+<div class="mask-controls"></div>
+<div class="mask-display">
+  <canvas class="ui-widget-content"></canvas>
+</div>
 </div>
 </div>
 
@@ -32,9 +39,12 @@ Surface mask
 <span class="spanbutton enabledisable" onclick="ctl(this).enabledisable()"><span>Enabled</span></span>
 <span class="spanbutton delete" onclick="ctl(this).delete()"><span>Delete</span></span>
 <div class="content">
+<div class="layer-controls" >
+Here are some controls
 <button onclick="test(this)">test</button>
+</div>
 <div class="layer-display">
-<canvas></canvas>
+<canvas class="ui-widget-content"></canvas>
 </div>
 </div>
 </div>

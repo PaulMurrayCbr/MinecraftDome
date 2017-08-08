@@ -7,7 +7,10 @@
 .layer > .delete { background: red; color: white; }
 
 .surface-mask { border: thin solid darkgray; margin: 1px; padding: 1px;}
-.surface-mask canvas { border: thin solid darkgray; margin: 1px; padding: 1px; }
+.surface-mask .mask-controls { border: thin solid darkgray; margin: 1px; padding: 1px;}
+.surface-mask .mask-display { border: thin solid darkgray; margin: 1px; padding: 1px;}
+.surface-mask .mask-display  canvas { border: thin solid darkgray; }
 
-.layer-display { border: thin solid darkgray; margin: 1px; padding: 1px; }
-.layer-display canvas { border: thin solid darkgray; margin: 1px; padding: 1px; }
+.layer .layer-controls { border: thin solid darkgray; margin: 1px; padding: 1px; }
+.layer .layer-display { border: thin solid darkgray; margin: 1px; padding: 1px; }
+.layer .layer-display canvas { border: thin solid darkgray; height: 50; width: 50;}

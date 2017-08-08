@@ -19,6 +19,8 @@ function ctl(e) {
 function App(element) {
   this.element = element;
   this.maskHidden = false;
+  
+  $(element).find(".surface-mask .mask-display canvas").resizable();
 }
 
 
@@ -29,6 +31,8 @@ App.prototype.addLayer = function() {
   layer.controller = new Layer(layer);
   
   $(this.element).find("#layers").prepend(layer);
+  
+  layer.controller.init();
 }
 
 App.prototype.hideShowMask = function() {
@@ -57,7 +61,14 @@ function Layer(element) {
                    {x:5, y:15, z:0},
                    {x:15, y:10, z:0}
                   ];
+  
+  
 }
+
+Layer.prototype.init = function() {
+  $(this.element).find(".layer-display canvas").resizable();
+}
+
 
 Layer.prototype.b = function(x,y,v) {
   if(!this.blocks[y] && !v) return;
