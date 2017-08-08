@@ -5,3 +5,9 @@
 .spanbutton { border: thin solid darkgray; cursor: pointer;}
 .spanbutton :hover { background: blue; color: white; }
 .layer > .delete { background: red; color: white; }
+
+.surface-mask { border: thin solid darkgray; margin: 1px; padding: 1px;}
+.surface-mask canvas { border: thin solid darkgray; margin: 1px; padding: 1px; }
+
+.layer-display { border: thin solid darkgray; margin: 1px; padding: 1px; }
+.layer-display canvas { border: thin solid darkgray; margin: 1px; padding: 1px; }

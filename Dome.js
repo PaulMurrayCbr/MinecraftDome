@@ -5,7 +5,7 @@ console.log("Dome.js start");
 
 $(function() {
   console.log("initialization");
-  
+  $("body")[0].controller = new App($("body")[0]);
 });
 
 function ctl(e) {
@@ -16,14 +16,27 @@ function ctl(e) {
   return null;
 }
 
-function addLayer() {
-  var layer = $(".layer.template").clone(true, true);
+function App(element) {
+  this.element = element;
+  this.maskHidden = false;
+}
+
+
+App.prototype.addLayer = function() {
+  var layer = $(this.element).find(".layer.template").clone(true, true);
   layer.removeClass("template");
   layer = layer[0];
   layer.controller = new Layer(layer);
   
-  $("#layers").prepend(layer);
+  $(this.element).find("#layers").prepend(layer);
 }
+
+App.prototype.hideShowMask = function() {
+  this.maskHidden = !this.maskHidden;
+  $(this.element).find(".surface-mask .content").css("display", this.maskHidden ? "none" : "block");
+  $(this.element).find(".surface-mask .hideshow > span").html(this.maskHidden ? "Closed" : "Open");
+}
+
 
 var layeridx = 1;
 
@@ -79,11 +92,7 @@ Layer.prototype.maxY = function() {
   return 0;
 }
 
-Layer.prototype.hideshow = function(a,b,c,d,e) {
-  console.log(a);
-  console.log(b);
-  console.log(c);
-  console.log(d);
+Layer.prototype.hideshow = function() {
   this.hidden = !this.hidden;
   $(this.element).find(".content").css("display", this.hidden ? "none" : "block");
   $(this.element).find(".hideshow > span").html(this.hidden ? "Closed" : "Open");

@@ -1,0 +1,28 @@
+{
+  "name": "minecraft_dome",
+  "authors": [
+    "Paul Murray <pmurray@bigpond.com>"
+  ],
+  "description": "Generate dome shapes for minecraft",
+  "main": "Dome.html",
+  "keywords": [
+    "minecraft",
+    "surface",
+    "parabola",
+    "catenary"
+  ],
+  "license": "CC-attribution",
+  "homepage": "http://paulmurraycbr.github.io/MinecraftDome/Dome.html",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "jquery-ui": "jqueryui#^1.12.1"
+  }
+}
