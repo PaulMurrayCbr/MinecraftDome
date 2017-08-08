@@ -18,17 +18,43 @@ function ctl(e) {
   return null;
 }
 
+function Point(x,y) {
+  this.x = x;
+  this.y = y;
+}
+
+// a set of point objects, used for map keys and set membership
+var uniquePoint = [];
+
+function up(x,y) {
+  if(!uniquePoint[x]) {
+    uniquePoint[x] = [];
+  }
+  if(!uniquePoint[x][y]) {
+    uniquePoint[x][y] = new Point(x,y);
+  }
+  return uniquePoint[x][y];
+}
+
 function App(element) {
   this.element = element;
   this.maskHidden = false;
 }
 
 App.prototype.init = function() {
-  $(this.element).find(".surface-mask .mask-display canvas").resizable();
+  this.canvas = $(this.element).find(".surface-mask .mask-display canvas")[0];
+  $(this.canvas).resizable();
   
-  $(this.element).find(".surface-mask .mask-display canvas").mouseover($.proxy(this.maskMouseover, this));
-  $(this.element).find(".surface-mask .mask-display canvas").mouseover($.proxy(this.maskMouseout, this));
-  $(this.element).find(".surface-mask .mask-display canvas").mousemove($.proxy(this.maskMousemove, this));
+  $(this.canvas).mouseover($.proxy(canvasMouseover, this));
+  $(this.canvas).mouseover($.proxy(canvasMouseout, this));
+  $(this.canvas).mousemove($.proxy(canvasMousemove, this));
+  $(this.canvas).mousedown($.proxy(canvasMousedown, this));
+  $(this.canvas).mouseup($.proxy(canvasMouseup, this));
+ 
+  this.isMouseDown = false;
+  this.isMouseSetting = false;
+  
+  
 }
 
 App.prototype.addLayer = function() {
@@ -70,7 +96,7 @@ function Layer(element) {
   this.x = 0;
   this.y = 0;
   
-  this.blocks = {}; // a 2d ragged map. blocks[4][5] will be true when there is a block at y=4,x=5
+  this.blocks = new Set();
   
   this.anchor = [ {x:5, y:5, z:0},
                    {x:5, y:15, z:0},
@@ -81,34 +107,32 @@ function Layer(element) {
 }
 
 Layer.prototype.init = function() {
-  $(this.element).find(".layer-display canvas").resizable();
+  this.canvas = $(this.element).find(".layer-display canvas")[0];
+  $(this.canvas).resizable();
   
-  $(this.element).find(".layer-display canvas").mouseover($.proxy(this.canvasMouseover, this));
-  $(this.element).find(".layer-display canvas").mouseover($.proxy(this.canvasMouseout, this));
-  $(this.element).find(".layer-display canvas").mousemove($.proxy(this.canvasMousemove, this));
+  $(this.canvas).mouseover($.proxy(canvasMouseover, this));
+  $(this.canvas).mouseover($.proxy(canvasMouseout, this));
+  $(this.canvas).mousemove($.proxy(canvasMousemove, this));
+  $(this.canvas).mousedown($.proxy(canvasMousedown, this));
+  $(this.canvas).mouseup($.proxy(canvasMouseup, this));
+ 
+  this.isMouseDown = false;
+  this.isMouseSetting = false;
   
-}
-
-Layer.prototype.canvasMouseover = function(event) {
-  console.log(this.idx);
-}
-
-Layer.prototype.canvasMouseout = function(event) {
-  console.log(this.idx);
-}
-
-Layer.prototype.canvasMousemove = function(event) {
-  console.log(this.idx);
 }
 
 Layer.prototype.b = function(x,y,v) {
-  if(!this.blocks[y] && !v) return;
-  if(!this.blocks[y]) this.blocks[y] = {};
-  
-  if(v != undefined) 
-    blocks[y][x] = v;
-  return !!blocks[y][x];
-  
+  var p = up(x,y);
+  if(v != undefined) {
+    if(v) {
+      this.blocks.add(p);
+    }
+    else {
+      this.blocks.delete(p);
+    }
+  }
+
+  return this.blocks.has(p);
 }
 
 Layer.prototype.btoggle = function(x,y,v) {
@@ -117,22 +141,7 @@ Layer.prototype.btoggle = function(x,y,v) {
   return !!blocks[y][x];
 }
 
-Layer.prototype.minX = function() {
-  return 0;
-}
 
-Layer.prototype.maxX = function() {
-  return 0;
-}
-
-Layer.prototype.minY = function() {
-  return 0;
-  
-}
-
-Layer.prototype.maxY = function() {
-  return 0;
-}
 
 Layer.prototype.hideshow = function() {
   this.hidden = !this.hidden;
@@ -150,6 +159,28 @@ Layer.prototype.delete = function() {
     $(this.element).remove();
   }
 }
+
+
+function canvasMouseover(event) {
+}
+
+function canvasMouseout (event) {
+  canvasMouseup(event);
+}
+
+function canvasMousedown(event) {
+  $(this.canvas).css("cursor", "pointer");
+  this.isMouseDown = true;
+}
+
+function canvasMouseup(event) {
+  $(this.canvas).css("cursor", "crosshair");
+  this.isMouseDown = false;
+}
+
+function canvasMousemove(event) {
+}
+
 
 function test(t) {
   console.log("test");

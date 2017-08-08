@@ -9,8 +9,9 @@
 .surface-mask { border: thin solid darkgray; margin: 1px; padding: 1px;}
 .surface-mask .mask-controls { border: thin solid darkgray; margin: 1px; padding: 1px;}
 .surface-mask .mask-display { border: thin solid darkgray; margin: 1px; padding: 1px;}
-.surface-mask .mask-display  canvas { border: thin solid darkgray; }
+.surface-mask .mask-display  canvas { cursor:crosshair; border: thin solid darkgray; }
 
 .layer .layer-controls { border: thin solid darkgray; margin: 1px; padding: 1px; }
 .layer .layer-display { border: thin solid darkgray; margin: 1px; padding: 1px; }
-.layer .layer-display canvas { border: thin solid darkgray; height: 50; width: 50;}
+.layer .layer-display canvas { cursor:crosshair; border: thin solid darkgray; height: 50; width: 50;}
+
