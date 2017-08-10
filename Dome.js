@@ -18,26 +18,26 @@ function ctl(e) {
   return null;
 }
 
-function Point(x,y) {
-  this.x = x;
-  this.y = y;
+function Point(x,z) {
+  this.x = z;
+  this.z = z;
 }
 
 Point.prototype.toString = function() {
-  return "(" + this.x + ", " + this.y + ")";
+  return "(" + this.x + ", " + this.z + ")";
 }
 
 // a set of point objects, used for map keys and set membership
 var uniquePoint = [];
 
-function up(x,y) {
+function up(x,z) {
   if(!uniquePoint[x]) {
     uniquePoint[x] = [];
   }
-  if(!uniquePoint[x][y]) {
-    uniquePoint[x][y] = new Point(x,y);
+  if(!uniquePoint[x][z]) {
+    uniquePoint[x][z] = new Point(x,z);
   }
-  return uniquePoint[x][y];
+  return uniquePoint[x][z];
 }
 
 function App(element) {
@@ -70,7 +70,7 @@ App.prototype.init = function() {
   
   this.canvasScale = 20;
   this.canvasX = 0;
-  this.canvasY = 0;
+  this.canvasZ = 0;
   
   this.canvasSetFill = "#D0D0FF";
   this.canvasNotsetFill = "#F0F0F0";    
@@ -78,24 +78,24 @@ App.prototype.init = function() {
   canvasRedraw(this);
 }
 
-App.prototype.redrawCanvas = function(x, y) {
-  canvasRedraw(this, x, y);
+App.prototype.redrawCanvas = function(x, z) {
+  canvasRedraw(this, x, z);
   
   var c = this;
   var canvas = c.canvas;
   var ctx = canvas.getContext("2d");
   
-  if(x == undefined || y == undefined) {
+  if(x == undefined || z == undefined) {
     for(var x=0; x * c.canvasScale <  $(canvas).width(); x++) {
-      for(var y=0; y * c.canvasScale <  $(canvas).height(); y++) {
-        var p = up(x,y);
+      for(var z=0; z * c.canvasScale <  $(canvas).height(); z++) {
+        var p = up(x,z);
         Layer.prototype.allLayers.forEach(function(l) {
           if(l.enabled && l.blocks.has(p)) {
       	    ctx.beginPath();
-            ctx.moveTo(x*c.canvasScale+1,y*c.canvasScale+1);
-            ctx.lineTo((x+1)*c.canvasScale-2,(y+1)*c.canvasScale-2);
-            ctx.moveTo(x*c.canvasScale+1,(y+1)*c.canvasScale-2);
-            ctx.lineTo((x+1)*c.canvasScale-2,y*c.canvasScale+1);
+            ctx.moveTo(x*c.canvasScale+1,z*c.canvasScale+1);
+            ctx.lineTo((x+1)*c.canvasScale-2,(z+1)*c.canvasScale-2);
+            ctx.moveTo(x*c.canvasScale+1,(z+1)*c.canvasScale-2);
+            ctx.lineTo((x+1)*c.canvasScale-2,z*c.canvasScale+1);
             ctx.stroke();
           }
         });
@@ -103,14 +103,14 @@ App.prototype.redrawCanvas = function(x, y) {
     }
   }
   else {
-    var p = up(x,y);
+    var p = up(x,z);
     Layer.prototype.allLayers.forEach(function(l) {
       if(l.enabled && l.blocks.has(p)) {
   	    ctx.beginPath();
-        ctx.moveTo(x*c.canvasScale+1,y*c.canvasScale+1);
-        ctx.lineTo((x+1)*c.canvasScale-2,(y+1)*c.canvasScale-2);
-        ctx.moveTo(x*c.canvasScale+1,(y+1)*c.canvasScale-2);
-        ctx.lineTo((x+1)*c.canvasScale-2,y*c.canvasScale+1);
+        ctx.moveTo(x*c.canvasScale+1,z*c.canvasScale+1);
+        ctx.lineTo((x+1)*c.canvasScale-2,(z+1)*c.canvasScale-2);
+        ctx.moveTo(x*c.canvasScale+1,(z+1)*c.canvasScale-2);
+        ctx.lineTo((x+1)*c.canvasScale-2,z*c.canvasScale+1);
         ctx.stroke();
       }
     });
@@ -155,14 +155,12 @@ function Layer(element) {
   
   this.height = 20;
   this.width = 20;
-  this.x = 0;
-  this.y = 0;
   
   this.blocks = new Set();
   
-  this.anchor = [ {x:5, y:5, z:0},
-                   {x:5, y:15, z:0},
-                   {x:15, y:10, z:0}
+  this.anchor = [ {x:5, z:5, y:0},
+                   {x:5, z:15, y:0},
+                   {x:15, z:10, y:0}
                   ];
   
   this.allLayers.add(this);
@@ -195,7 +193,7 @@ Layer.prototype.init = function() {
  
   this.canvasScale = 20;
   this.canvasX = 0;
-  this.canvasY = 0;
+  this.canvasZ = 0;
   this.canvasSetFill = "#808080";
   this.canvasNotsetFill = "#F0F0F0";    
     
@@ -204,12 +202,6 @@ Layer.prototype.init = function() {
   this.isMouseSetting = false;
     
   canvasRedraw(this);
-}
-
-Layer.prototype.btoggle = function(x,y,v) {
-  if(!this.blocks[y]) this.blocks[y] = {};
-    blocks[y][x] = !blocks[y][x];
-  return !!blocks[y][x];
 }
 
 Layer.prototype.hideshow = function() {
@@ -232,11 +224,11 @@ Layer.prototype.delete = function() {
   }
 }
 
-Layer.prototype.redrawCanvas = function(x, y) {
-  canvasRedraw(this, x, y);
+Layer.prototype.redrawCanvas = function(x, z) {
+  canvasRedraw(this, x, z);
 
   // trigger a redraw of the durface mask
-  ctl($(".surface-mask .mask-display")[0]).redrawCanvas(x, y);
+  ctl($(".surface-mask .mask-display")[0]).redrawCanvas(x, z);
   
   // draw in the three anchor points
 }
@@ -255,12 +247,12 @@ function canvasMousedown(event) {
   
   var offs = $(this.canvas).offset();
   x = event.clientX - offs.left;
-  y = event.clientY - offs.top;
+  z = event.clientY - offs.top;
   
   x = Math.floor(x / this.canvasScale);
-  y = Math.floor(y / this.canvasScale);
+  z = Math.floor(z / this.canvasScale);
   
-  var p = up(x,y);
+  var p = up(x,z);
 
   this.isMouseSetting = !this.blocks.has(p);
   
@@ -271,7 +263,7 @@ function canvasMousedown(event) {
     this.blocks.delete(p);
   }
   
-  this.redrawCanvas(x, y);
+  this.redrawCanvas(x, z);
 }
 
 function canvasMouseup(event) {
@@ -283,13 +275,13 @@ function canvasMousemove(event) {
   if(!this.isMouseDown) return;
   
   var offs = $(this.canvas).offset();
-  x = event.clientX - offs.left;
-  y = event.clientY - offs.top;
+  var x = event.clientX - offs.left;
+  var z = event.clientY - offs.top;
   
   x = Math.floor(x / this.canvasScale);
-  y = Math.floor(y / this.canvasScale);
+  z = Math.floor(z / this.canvasScale);
   
-  var p = up(x,y);
+  var p = up(x,z);
   
   if(this.blocks.has(p) == this.isMouseSetting) return;
   
@@ -300,30 +292,30 @@ function canvasMousemove(event) {
     this.blocks.delete(p);
   }
   
-  this.redrawCanvas(x, y);
+  this.redrawCanvas(x, z);
 }
 
-function canvasRedraw(c, x, y) {
+function canvasRedraw(c, x, z) {
   var canvas = c.canvas;
   var ctx = canvas.getContext("2d");
   
-  if(x == undefined || y == undefined) {
+  if(x == undefined || z == undefined) {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0,0,$(canvas).width(), $(canvas).height());
     for(var x=0; x * c.canvasScale <  $(canvas).width(); x++) {
-      for(var y=0; y * c.canvasScale <  $(canvas).height(); y++) {
-        var p = up(x,y);
+      for(var z=0; z * c.canvasScale <  $(canvas).height(); z++) {
+        var p = up(x,z);
         ctx.fillStyle = (c.blocks.has(p) ? c.canvasSetFill : c.canvasNotsetFill)
-        ctx.fillRect(x*c.canvasScale+1,y*c.canvasScale+1,c.canvasScale-1,c.canvasScale-1);
+        ctx.fillRect(x*c.canvasScale+1,z*c.canvasScale+1,c.canvasScale-1,c.canvasScale-1);
       }
     }
   }
   else {
-    var p = up(x,y);
+    var p = up(x,z);
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(x*c.canvasScale,y*c.canvasScale,c.canvasScale+1,c.canvasScale+1);
+    ctx.fillRect(x*c.canvasScale,z*c.canvasScale,c.canvasScale+1,c.canvasScale+1);
     ctx.fillStyle = (c.blocks.has(p) ? c.canvasSetFill : c.canvasNotsetFill)
-    ctx.fillRect(x*c.canvasScale+1,y*c.canvasScale+1,c.canvasScale-1,c.canvasScale-1);
+    ctx.fillRect(x*c.canvasScale+1,z*c.canvasScale+1,c.canvasScale-1,c.canvasScale-1);
   }
   
 }
