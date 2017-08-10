@@ -91,6 +91,7 @@ App.prototype.redrawCanvas = function(x, y) {
         var p = up(x,y);
         Layer.prototype.allLayers.forEach(function(l) {
           if(l.enabled && l.blocks.has(p)) {
+      	    ctx.beginPath();
             ctx.moveTo(x*c.canvasScale+1,y*c.canvasScale+1);
             ctx.lineTo((x+1)*c.canvasScale-2,(y+1)*c.canvasScale-2);
             ctx.moveTo(x*c.canvasScale+1,(y+1)*c.canvasScale-2);
@@ -105,6 +106,7 @@ App.prototype.redrawCanvas = function(x, y) {
     var p = up(x,y);
     Layer.prototype.allLayers.forEach(function(l) {
       if(l.enabled && l.blocks.has(p)) {
+  	    ctx.beginPath();
         ctx.moveTo(x*c.canvasScale+1,y*c.canvasScale+1);
         ctx.lineTo((x+1)*c.canvasScale-2,(y+1)*c.canvasScale-2);
         ctx.moveTo(x*c.canvasScale+1,(y+1)*c.canvasScale-2);
@@ -318,6 +320,8 @@ function canvasRedraw(c, x, y) {
   }
   else {
     var p = up(x,y);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(x*c.canvasScale,y*c.canvasScale,c.canvasScale+1,c.canvasScale+1);
     ctx.fillStyle = (c.blocks.has(p) ? c.canvasSetFill : c.canvasNotsetFill)
     ctx.fillRect(x*c.canvasScale+1,y*c.canvasScale+1,c.canvasScale-1,c.canvasScale-1);
   }
