@@ -16,54 +16,72 @@
 <script src="Dome.js" type="text/javascript"></script>
 </head>
 <body>
-<p>This page allows you to generate dome shapes for minecraft. Sorry about the UI being a bit rough.</p>
-<p>Add a layer. Draw your anchor blocks on the layer (for a dome, this will be a circle).  </p>
-<p>Coordinates are minecraft coordinates. 0,0 is at the top-left of the screen. Top of the screen is North (negative Z). Right of the screen is 
-East (positive X). Elevation is Y. </p>
+	<p>This page allows you to generate dome shapes for minecraft.
+		Sorry about the UI being a bit rough.</p>
+	<p>
+	<ol>
+		<li>Add a layer.</li>
+		<li>Draw your support blocks on the layer (eg: a circle, two or
+			three points).</li>
+		<li>(optional) Adjust the anchors to change the height of your layer, or to give it a slope.</li>
+		<li>On the surface mask, draw in a shape covering your supports.</li>
+	</ol>
+	</p>
+	<p>Coordinates are minecraft coordinates. 0,0 is at the top-left of
+		the screen. Top of the screen is North (negative Z). Right of the
+		screen is East (positive X). Elevation is Y.</p>
 
-<div class="surface-mask">
-Surface mask
-<span class="spanbutton hideshow" onclick="ctl(this).hideShowMask()"><span>Open</span></span>
-<div class="content">
-<div class="mask-controls"></div>
-<div class="mask-display">
-  <canvas class="ui-widget-content"></canvas>
-</div>
-</div>
-</div>
+	<div class="surface-mask">
+		Surface mask <span class="spanbutton hideshow"
+			onclick="ctl(this).hideShowMask()"><span>Open</span></span>
+		<div class="content">
+			<div class="mask-controls"></div>
+			<div class="mask-display">
+				<canvas class="ui-widget-content"></canvas>
+			</div>
+		</div>
+	</div>
 
-<button onclick="ctl(this).addLayer()">Add layer</button>
-<div id="layers">
-</div>
+	<button onclick="ctl(this).addLayer()">Add layer</button>
+	<div id="layers"></div>
 
-<div class="layer template">
-<span class="spanbutton hideshow" onclick="ctl(this).hideshow()"><span>Open</span></span>
-<span class="spanbutton enabledisable" onclick="ctl(this).enabledisable()"><span>Enabled</span></span>
-<span class="spanbutton delete" onclick="ctl(this).delete()"><span>Delete</span></span>
-<div class="content">
-<div class="layer-controls" >
-Here are some controls
-<button onclick="test(this)">test</button>
-</div>
-<div class="layer-display">
-<canvas class="ui-widget-content"></canvas>
-</div>
-<div class="layer-controls" >
-Here are some more controls<br/>
-<div class="layer-anchors">
-<div class="layer-anchor red">
-<span style="color: red;">⚓</span> X <input class="x" type="number" value="10"/> Z <input class="z" type="number" value="10"/> Y <input class="y" step="0.1" type="number" value="0"/> 
-</div><div class="layer-anchor green">
-<span style="color: green;">⚓</span> X <input class="x" type="number" value="10"/> Z <input class="z" type="number" value="10"/> Y <input class="y" step="0.1" type="number" value="0"/> 
-</div>
-<div class="layer-anchor blue">
-<span style="color: blue;">⚓</span> X <input class="x" type="number" value="10"/> Z <input class="z" type="number" value="10"/> Y <input class="y" step="0.1" type="number" value="0"/> 
-</div>
-</div>
-</div>
+	<div class="layer template">
+		<span class="spanbutton hideshow" onclick="ctl(this).hideshow()"><span>Open</span></span>
+		<span class="spanbutton enabledisable"
+			onclick="ctl(this).enabledisable()"><span>Enabled</span></span> <span
+			class="spanbutton delete" onclick="ctl(this).delete()"><span>Delete</span></span>
+		<div class="content">
+			<div class="layer-controls">
+				<button onclick="test(this)">test</button>
+			</div>
+			<div class="layer-display">
+				<canvas class="ui-widget-content"></canvas>
+			</div>
+			<div class="layer-controls">
+				<div class="layer-anchors">
+					<div class="layer-anchor red">
+						<span style="color: red;">⚓</span> X <input class="x"
+							type="number" value="10" /> Z <input class="z" type="number"
+							value="10" /> Y <input class="y" step="0.1" type="number"
+							value="0" />
+					</div>
+					<div class="layer-anchor green">
+						<span style="color: green;">⚓</span> X <input class="x"
+							type="number" value="10" /> Z <input class="z" type="number"
+							value="10" /> Y <input class="y" step="0.1" type="number"
+							value="0" />
+					</div>
+					<div class="layer-anchor blue">
+						<span style="color: blue;">⚓</span> X <input class="x"
+							type="number" value="10" /> Z <input class="z" type="number"
+							value="10" /> Y <input class="y" step="0.1" type="number"
+							value="0" />
+					</div>
+				</div>
+			</div>
 
-</div>
-</div>
+		</div>
+	</div>
 
 </body>
 </html>
