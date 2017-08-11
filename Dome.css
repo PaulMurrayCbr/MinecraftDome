@@ -16,3 +16,7 @@
 .layer .layer-display canvas { cursor:crosshair; border: thin solid darkgray; height: 50; width: 50;}
 
 .layer .layer-anchor input { width: 4em;}
+
+.display-div { border: thin solid darkgray; margin: 1px; padding: 1px;}
+.display-div .display-content { border: thin solid darkgray; margin: 1px; padding: 1px;}
+.display-div .display-content .ui-widget-content { height: 50px; width:81px;}
