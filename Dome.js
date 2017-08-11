@@ -75,7 +75,7 @@ App.prototype.init = function() {
   this.canvasSetFill = "#D0D0FF";
   this.canvasNotsetFill = "#F0F0F0";    
     
-  canvasRedraw(this);
+  this.redrawCanvas();
 }
 
 App.prototype.redrawCanvas = function(x, z) {
@@ -114,6 +114,7 @@ App.prototype.redrawCanvas = function(x, z) {
         ctx.stroke();
       }
     });
+    
   }
   
   // go through the layers, draw the layer blocks
@@ -158,10 +159,10 @@ function Layer(element) {
   
   this.blocks = new Set();
   
-  this.anchor = [ {x:5, z:5, y:0},
-                   {x:5, z:15, y:0},
-                   {x:15, z:10, y:0}
-                  ];
+  this.anchor = { red: {x:0, z:0, y:0},
+                   green: {x:0, z:5, y:0},
+                   blue: {x:5, z:0, y:0}
+  };
   
   this.allLayers.add(this);
 }
@@ -200,8 +201,39 @@ Layer.prototype.init = function() {
   
   this.isMouseDown = false;
   this.isMouseSetting = false;
+
+  for(i in this.anchor) {
+    $(this.element).find(".layer-anchor." + i + " input.x").val(this.anchor[i].x);
+    $(this.element).find(".layer-anchor." + i + " input.y").val(this.anchor[i].y);
+    $(this.element).find(".layer-anchor." + i + " input.z").val(this.anchor[i].z);
+  }
+  
+  console.log($(this.element).find(".layer-anchor input"));
+  $(this.element).find(".layer-anchor input").change($.proxy(anchorUpdated, this))
+  
+  this.redrawCanvas();
+}
+
+function anchorUpdated() {
+  for(i in this.anchor) {
+    var f;
     
-  canvasRedraw(this);
+    f = parseInt($(this.element).find(".layer-anchor." + i + " input.x").val());
+    $(this.element).find(".layer-anchor." + i + " input.x").val(f);
+    this.anchor[i].x = f;
+    
+    f = parseInt($(this.element).find(".layer-anchor." + i + " input.z").val());
+    $(this.element).find(".layer-anchor." + i + " input.z").val(f);
+    this.anchor[i].z = f;
+    
+    f = parseFloat($(this.element).find(".layer-anchor." + i + " input.y").val());
+    $(this.element).find(".layer-anchor." + i + " input.y").val(f);
+    this.anchor[i].y = f;
+    
+    
+  }
+  
+  this.redrawCanvas();
 }
 
 Layer.prototype.hideshow = function() {
@@ -230,7 +262,18 @@ Layer.prototype.redrawCanvas = function(x, z) {
   // trigger a redraw of the durface mask
   ctl($(".surface-mask .mask-display")[0]).redrawCanvas(x, z);
   
+  var c = this;
+  var canvas = c.canvas;
+  var ctx = canvas.getContext("2d");
+  
+  ctx.font =  (c.canvasScale-2) + "px sans-serif"
+  ctx.textAlign="center";
+  
   // draw in the three anchor points
+  for(var i in this.anchor ) {
+    ctx.fillStyle = i;
+    ctx.fillText("⚓",(this.anchor[i].x+.5)*c.canvasScale,(this.anchor[i].z+1)*c.canvasScale-1);
+  }
 }
 
 

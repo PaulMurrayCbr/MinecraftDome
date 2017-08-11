@@ -18,7 +18,8 @@
 <body>
 <p>This page allows you to generate dome shapes for minecraft. Sorry about the UI being a bit rough.</p>
 <p>Add a layer. Draw your anchor blocks on the layer (for a dome, this will be a circle).  </p>
-<p>Sometimes you have to wiggle the resize handle on the mask layer to make it draw properly. I don't know why.</p>
+<p>Coordinates are minecraft coordinates. 0,0 is at the top-left of the screen. Top of the screen is North (negative Z). Right of the screen is 
+East (positive X). Elevation is Y. </p>
 
 <div class="surface-mask">
 Surface mask
@@ -49,9 +50,16 @@ Here are some controls
 </div>
 <div class="layer-controls" >
 Here are some more controls<br/>
-Anchor1 X <input type="number" step="0.01" value="0"/> Z <input type="number" step="0.01" value="10"/> Y <input step="0.01" type="number" value="0"/> <br/>
-Anchor2 X <input type="number" step="0.01" value="10"/> Z <input type="number" step="0.01" value="0"/> Y <input step="0.01" type="number" value="0"/> <br/>
-Anchor3 X <input type="number" step="0.01" value="10"/> Z <input type="number" step="0.01" value="10"/> Y <input step="0.01" type="number" value="0"/> <br/>
+<div class="layer-anchors">
+<div class="layer-anchor red">
+<span style="color: red;">⚓</span> X <input class="x" type="number" value="10"/> Z <input class="z" type="number" value="10"/> Y <input class="y" step="0.1" type="number" value="0"/> 
+</div><div class="layer-anchor green">
+<span style="color: green;">⚓</span> X <input class="x" type="number" value="10"/> Z <input class="z" type="number" value="10"/> Y <input class="y" step="0.1" type="number" value="0"/> 
+</div>
+<div class="layer-anchor blue">
+<span style="color: blue;">⚓</span> X <input class="x" type="number" value="10"/> Z <input class="z" type="number" value="10"/> Y <input class="y" step="0.1" type="number" value="0"/> 
+</div>
+</div>
 </div>
 
 </div>
