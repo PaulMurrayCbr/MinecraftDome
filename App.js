@@ -4,7 +4,18 @@ function App(element) {
   this.element = element;
   this.maskHidden = false;
   this.blocks = new Set();
-
+  this.bounds = {
+      min : {
+        x : 0,
+        y : 0,
+        z : 0
+      },
+      max : {
+        x : 0,
+        y : 0,
+        z : 0
+      }
+    };
 }
 
 App.prototype.init = function() {

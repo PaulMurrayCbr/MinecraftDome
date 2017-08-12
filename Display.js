@@ -20,7 +20,10 @@ Display.prototype.init = function() {
   c.scene = new THREE.Scene();
   c.scene.background = new THREE.Color(0xf8f8f8);
 
-  c.camera = new THREE.PerspectiveCamera(75, 1, 1, 200);
+  c.camera = new THREE.PerspectiveCamera(10, 1, 1, 200);
+  c.camera.position.z = 50;
+  this.camera.updateProjectionMatrix();
+  
 
   c.renderer = new THREE.WebGLRenderer();
   c.renderer.setSize(50, 50);
@@ -43,9 +46,9 @@ Display.prototype.init = function() {
     color : 0x2194ce
   });
 
-  for (var x = -3; x <= 3; x += 2)
+  for (var x = 0; x <= 3; x += 2)
     for (var y = -3; y <= 3; y += 2)
-      for (var z = -2; z <= 2; z += 2) {
+      for (var z = -2; z <= 0; z += 2) {
         var cube = new THREE.Mesh(geometry, material);
         cube.position.x = x;
         cube.position.y = y;
@@ -105,38 +108,102 @@ Display.prototype.resizeFunc = function(event, ui) {
 }
 
 Display.prototype.ccwTick = function() {
+  var q = new THREE.Quaternion();
+  q.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), -Math.PI / 2 / 60 );
+  this.camera.quaternion.multiply(q);
+  
+  relpos = new THREE.Vector3(
+ (this.app.bounds.max.x + this.app.bounds.min.x)/2 - this.camera.x,
+   (this.app.bounds.max.y + this.app.bounds.min.y)/2- this.camera.y,
+   (this.app.bounds.max.z + this.app.bounds.min.z)/2- this.camera.z);
+  
+  relpos.applyQuaternion(q);
+
+  this.camera.x = (this.app.bounds.max.x + this.app.bounds.min.x)/2 - relpos.x;
+  this.camera.y = (this.app.bounds.max.y + this.app.bounds.min.y)/2 - relpos.y;
+  this.camera.z = (this.app.bounds.max.z + this.app.bounds.min.z)/2 - relpos.z;
+  
+  this.renderer.render(this.scene, this.camera);
 
 }
 
 Display.prototype.leftTick = function() {
+  var offs = new THREE.Vector3(.25,0,0);
+  offs.applyQuaternion(this.camera.quaternion);
+  
+  this.camera.position.x += offs.x;
+  this.camera.position.y += offs.y;
+  this.camera.position.z += offs.z;
+  this.camera.updateProjectionMatrix();
+  this.renderer.render(this.scene, this.camera);
 }
 
 Display.prototype.upTick = function() {
+  var offs = new THREE.Vector3(0,-.25,0);
+  offs.applyQuaternion(this.camera.quaternion);
+  
+  this.camera.position.x += offs.x;
+  this.camera.position.y += offs.y;
+  this.camera.position.z += offs.z;
+  this.camera.updateProjectionMatrix();
+  this.renderer.render(this.scene, this.camera);
 
 }
 
 Display.prototype.downTick = function() {
+  var offs = new THREE.Vector3(0,.25,0);
+  offs.applyQuaternion(this.camera.quaternion);
+  
+  this.camera.position.x += offs.x;
+  this.camera.position.y += offs.y;
+  this.camera.position.z += offs.z;
+  this.camera.updateProjectionMatrix();
+  this.renderer.render(this.scene, this.camera);
 
 }
 
 Display.prototype.rightTick = function() {
+  var offs = new THREE.Vector3(-.25,0,0);
+  offs.applyQuaternion(this.camera.quaternion);
+  
+  this.camera.position.x += offs.x;
+  this.camera.position.y += offs.y;
+  this.camera.position.z += offs.z;
+  this.camera.updateProjectionMatrix();
+  this.renderer.render(this.scene, this.camera);
 
 }
 
 Display.prototype.cwTick = function() {
-
+  var q = new THREE.Quaternion();
+  q.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 2 / 60 );
+  this.camera.quaternion.multiply(q);
+  this.renderer.render(this.scene, this.camera);
 }
 
 Display.prototype.fwdTick = function() {
-  var dir = this.camera.getWorldDirection();
-  console.log(dir);
+  var offs = new THREE.Vector3(0,0,.25);
+  offs.applyQuaternion(this.camera.quaternion);
+  
+  this.camera.position.x += offs.x;
+  this.camera.position.y += offs.y;
+  this.camera.position.z += offs.z;
+  this.camera.updateProjectionMatrix();
+  this.renderer.render(this.scene, this.camera);
 }
 
 Display.prototype.backTick = function() {
-
+  var offs = new THREE.Vector3(0,0,-.25);
+  offs.applyQuaternion(this.camera.quaternion);
+  
+  this.camera.position.x += offs.x;
+  this.camera.position.y += offs.y;
+  this.camera.position.z += offs.z;
+  this.camera.updateProjectionMatrix();
+  this.renderer.render(this.scene, this.camera);
 }
 
-Display.prototype.plusTick = function() {
+Display.prototype.minusTick = function() {
   if (this.camera.fov < 145) {
     this.camera.fov *= 1.1;
     this.camera.updateProjectionMatrix();
@@ -144,7 +211,7 @@ Display.prototype.plusTick = function() {
   }
 }
 
-Display.prototype.minusTick = function() {
+Display.prototype.plusTick = function() {
   if (this.camera.fov > 20) {
     this.camera.fov /= 1.1;
     this.camera.updateProjectionMatrix();
@@ -183,7 +250,7 @@ ContinuousButton.prototype.mouseUp = function() {
 ContinuousButton.prototype.possibleTick = function() {
   if (this.ticking) {
     this.onTick();
-    window.setTimeout(this.tickProxy, 200);
+    window.setTimeout(this.tickProxy, 50);
   }
 }
 
