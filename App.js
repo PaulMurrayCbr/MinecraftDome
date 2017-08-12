@@ -4,13 +4,13 @@ function App(element) {
   this.element = element;
   this.maskHidden = false;
   this.blocks = new Set();
-  
+
 }
 
 App.prototype.init = function() {
   this.canvas = $(this.element).find(".surface-mask .mask-display canvas")[0];
   $(this.canvas).resizable({
-    resize: function(event, ui) {
+    resize : function(event, ui) {
       var c = ctl(ui.element[0])
       // set the resolution of the canvas equal to the UI size
       c.canvas.width = $(c.canvas).width();
@@ -18,65 +18,104 @@ App.prototype.init = function() {
       ctl(ui.element[0]).redrawCanvas();
     }
   });
-  
+
   $(this.canvas).mouseover($.proxy(canvasMouseover, this));
   $(this.canvas).mouseout($.proxy(canvasMouseout, this));
   $(this.canvas).mousemove($.proxy(canvasMousemove, this));
   $(this.canvas).mousedown($.proxy(canvasMousedown, this));
   $(this.canvas).mouseup($.proxy(canvasMouseup, this));
- 
+
   this.isMouseDown = false;
   this.isMouseSetting = false;
-  
+
   this.canvasScale = 20;
   this.canvasX = 0;
   this.canvasZ = 0;
-  
+
   this.canvasSetFill = "#D0D0FF";
-  this.canvasNotsetFill = "#F0F0F0";    
-    
+  this.canvasNotsetFill = "#F0F0F0";
+
   this.redrawCanvas();
+}
+
+App.prototype.recalculateBounds = function() {
+  this.bounds = {
+    min : {
+      x : 0,
+      y : 0,
+      z : 0
+    },
+    max : {
+      x : 0,
+      y : 0,
+      z : 0
+    }
+  };
+  var gotone = false;
+  
+  b = this.bounds;
+  
+
+  this.blocks.forEach(function(p) {
+    if (!gotone) {
+      b.min.x = p.x;
+      b.max.x = p.x;
+      b.min.z = p.z;
+      b.max.z = p.z;
+      gotone = true
+    } else {
+      b.min.x = Math.min(b.min.x, p.x)
+      b.max.x = Math.max(b.max.x, p.x)
+      b.min.z = Math.min(b.min.z, p.z)
+      b.max.z = Math.max(b.max.z, p.z)
+    }
+  });
+}
+
+App.prototype.blockUpdate = function(p, added) {
+  this.recalculateBounds();
 }
 
 App.prototype.redrawCanvas = function(x, z) {
   canvasRedraw(this, x, z);
-  
+
   var c = this;
   var canvas = c.canvas;
   var ctx = canvas.getContext("2d");
-  
-  if(x == undefined || z == undefined) {
-    for(var x=0; x * c.canvasScale <  $(canvas).width(); x++) {
-      for(var z=0; z * c.canvasScale <  $(canvas).height(); z++) {
-        var p = up(x,z);
+
+  if (x == undefined || z == undefined) {
+    for (var x = 0; x * c.canvasScale < $(canvas).width(); x++) {
+      for (var z = 0; z * c.canvasScale < $(canvas).height(); z++) {
+        var p = up(x, z);
         Layer.prototype.allLayers.forEach(function(l) {
-          if(l.enabled && l.blocks.has(p)) {
+          if (l.enabled && l.blocks.has(p)) {
             ctx.beginPath();
-            ctx.moveTo(x*c.canvasScale+1,z*c.canvasScale+1);
-            ctx.lineTo((x+1)*c.canvasScale-2,(z+1)*c.canvasScale-2);
-            ctx.moveTo(x*c.canvasScale+1,(z+1)*c.canvasScale-2);
-            ctx.lineTo((x+1)*c.canvasScale-2,z*c.canvasScale+1);
+            ctx.moveTo(x * c.canvasScale + 1, z * c.canvasScale + 1);
+            ctx
+                .lineTo((x + 1) * c.canvasScale - 2, (z + 1) * c.canvasScale
+                    - 2);
+            ctx.moveTo(x * c.canvasScale + 1, (z + 1) * c.canvasScale - 2);
+            ctx.lineTo((x + 1) * c.canvasScale - 2, z * c.canvasScale + 1);
             ctx.stroke();
           }
         });
       }
     }
-  }
-  else {
-    var p = up(x,z);
+  } else {
+    var p = up(x, z);
     Layer.prototype.allLayers.forEach(function(l) {
-      if(l.enabled && l.blocks.has(p)) {
+      if (l.enabled && l.blocks.has(p)) {
         ctx.beginPath();
-        ctx.moveTo(x*c.canvasScale+1,z*c.canvasScale+1);
-        ctx.lineTo((x+1)*c.canvasScale-2,(z+1)*c.canvasScale-2);
-        ctx.moveTo(x*c.canvasScale+1,(z+1)*c.canvasScale-2);
-        ctx.lineTo((x+1)*c.canvasScale-2,z*c.canvasScale+1);
+        ctx.moveTo(x * c.canvasScale + 1, z * c.canvasScale + 1);
+        ctx.lineTo((x + 1) * c.canvasScale - 2, (z + 1) * c.canvasScale - 2);
+        ctx.moveTo(x * c.canvasScale + 1, (z + 1) * c.canvasScale - 2);
+        ctx.lineTo((x + 1) * c.canvasScale - 2, z * c.canvasScale + 1);
         ctx.stroke();
       }
     });
-    
+
   }
-  
+
   // go through the layers, draw the layer blocks
 }
 
@@ -84,17 +123,19 @@ App.prototype.addLayer = function() {
   var layer = $(this.element).find(".layer.template").clone(true, true);
   layer.removeClass("template");
   layer = layer[0];
-  layer.controller = new Layer(layer);
-  
+  layer.controller = new Layer(layer, this);
+
   $(this.element).find("#layers").prepend(layer);
-  
+
   layer.controller.init();
 }
 
 App.prototype.hideShowMask = function() {
   this.maskHidden = !this.maskHidden;
-  $(this.element).find(".surface-mask .content").css("display", this.maskHidden ? "none" : "block");
-  $(this.element).find(".surface-mask .hideshow > span").html(this.maskHidden ? "Closed" : "Open");
+  $(this.element).find(".surface-mask .content").css("display",
+      this.maskHidden ? "none" : "block");
+  $(this.element).find(".surface-mask .hideshow > span").html(
+      this.maskHidden ? "Closed" : "Open");
 }
 
 console.log("App.js ok");

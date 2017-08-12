@@ -9,7 +9,7 @@ $(function() {
   
   var displayDiv;
   displayDiv = $(".display-div")[0];
-  displayDiv.controller = new Display(displayDiv);
+  displayDiv.controller = new Display(displayDiv, body.controller);
   displayDiv.controller.init();
 });
 
@@ -22,7 +22,7 @@ function ctl(e) {
 }
 
 function Point(x,z) {
-  this.x = z;
+  this.x = x;
   this.z = z;
 }
 
@@ -67,9 +67,11 @@ function canvasMousedown(event) {
   
   if(this.isMouseSetting) {
     this.blocks.add(p);
+    this.blockUpdate(p, true);
   }
   else {
     this.blocks.delete(p);
+    this.blockUpdate(p, false);
   }
   
   this.redrawCanvas(x, z);
@@ -96,9 +98,11 @@ function canvasMousemove(event) {
   
   if(this.isMouseSetting) {
     this.blocks.add(p);
+    this.blockUpdate(p, true);
   }
   else {
     this.blocks.delete(p);
+    this.blockUpdate(p, false);
   }
   
   this.redrawCanvas(x, z);

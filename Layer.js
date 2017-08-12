@@ -2,11 +2,13 @@ console.log("Layer.js start");
 
 var layeridx = 1;
 
-function Layer(element) {
+function Layer(element, app) {
   this.idx = layeridx++;
   this.element = element;
+  this.app = app;
   this.hidden = false;
   this.enabled = true;
+  
   
   this.height = 20;
   this.width = 20;
@@ -110,11 +112,15 @@ Layer.prototype.delete = function() {
   }
 }
 
+Layer.prototype.blockUpdate = function(p, added) {
+  
+}
+
 Layer.prototype.redrawCanvas = function(x, z) {
   canvasRedraw(this, x, z);
 
-  // trigger a redraw of the durface mask
-  ctl($(".surface-mask .mask-display")[0]).redrawCanvas(x, z);
+  // trigger a redraw of the surface mask
+  this.app.redrawCanvas(x, z);
   
   var c = this;
   var canvas = c.canvas;
