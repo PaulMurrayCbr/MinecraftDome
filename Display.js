@@ -3,7 +3,10 @@ console.log("Display.js start");
 function Display(element, app) {
   this.element = element;
   this.app = app;
-  
+  this.theta = Math.PI/6;
+  this.phi = Math.PI/6;
+  this.r = 50;
+
   $(element).find(".display-controls .spanbutton").each(function(i, e) {
     e.controller = new ContinuousButton(e);
   });
@@ -12,8 +15,6 @@ function Display(element, app) {
 
 Display.prototype.init = function() {
   var c = this;
-
-  
   
   c.container = $(this.element).find(".display-content")[0];
 
@@ -21,8 +22,6 @@ Display.prototype.init = function() {
   c.scene.background = new THREE.Color(0xf8f8f8);
 
   c.camera = new THREE.PerspectiveCamera(10, 1, 1, 200);
-  c.camera.position.z = 50;
-  this.camera.updateProjectionMatrix();
   
 
   c.renderer = new THREE.WebGLRenderer();
@@ -65,6 +64,7 @@ Display.prototype.init = function() {
   hemiLight.position.set(0, 500, 0);
   c.scene.add(hemiLight);
 
+  this.updateCamera();
   this.resizeFunc();
 
   $(this.element).find(".display-controls .spanbutton").each(function(i, e) {
@@ -73,14 +73,10 @@ Display.prototype.init = function() {
 
   $(this.element).find(".display-controls #display-ccw")[0].controller.onTick = $
       .proxy(this.ccwTick, this);
-  $(this.element).find(".display-controls #display-left")[0].controller.onTick = $
-      .proxy(this.leftTick, this);
   $(this.element).find(".display-controls #display-up")[0].controller.onTick = $
       .proxy(this.upTick, this);
   $(this.element).find(".display-controls #display-down")[0].controller.onTick = $
       .proxy(this.downTick, this);
-  $(this.element).find(".display-controls #display-right")[0].controller.onTick = $
-      .proxy(this.rightTick, this);
   $(this.element).find(".display-controls #display-cw")[0].controller.onTick = $
       .proxy(this.cwTick, this);
   $(this.element).find(".display-controls #display-fwd")[0].controller.onTick = $
@@ -107,100 +103,57 @@ Display.prototype.resizeFunc = function(event, ui) {
   this.renderer.render(this.scene, this.camera);
 }
 
-Display.prototype.ccwTick = function() {
-  var q = new THREE.Quaternion();
-  q.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), -Math.PI / 2 / 60 );
-  this.camera.quaternion.multiply(q);
+Display.prototype.updateCamera = function() {
+  this.camera.position.x = (this.app.bounds.max.x + this.app.bounds.min.x)/2;
+  this.camera.position.y = (this.app.bounds.max.y + this.app.bounds.min.y)/2;
+  this.camera.position.z = (this.app.bounds.max.z + this.app.bounds.min.z)/2;
   
-  relpos = new THREE.Vector3(
- (this.app.bounds.max.x + this.app.bounds.min.x)/2 - this.camera.x,
-   (this.app.bounds.max.y + this.app.bounds.min.y)/2- this.camera.y,
-   (this.app.bounds.max.z + this.app.bounds.min.z)/2- this.camera.z);
+  this.camera.position.x += this.r * Math.sin(this.theta) * Math.cos(this.phi);
+  this.camera.position.z += this.r * Math.cos(this.theta) * Math.cos(this.phi);
+  this.camera.position.y += this.r * Math.sin(this.phi);
   
-  relpos.applyQuaternion(q);
-
-  this.camera.x = (this.app.bounds.max.x + this.app.bounds.min.x)/2 - relpos.x;
-  this.camera.y = (this.app.bounds.max.y + this.app.bounds.min.y)/2 - relpos.y;
-  this.camera.z = (this.app.bounds.max.z + this.app.bounds.min.z)/2 - relpos.z;
+  this.camera.lookAt(new THREE.Vector3(
+    (this.app.bounds.max.x + this.app.bounds.min.x)/2,
+    (this.app.bounds.max.y + this.app.bounds.min.y)/2,
+    (this.app.bounds.max.z + this.app.bounds.min.z)/2
+  ));
   
-  this.renderer.render(this.scene, this.camera);
-
-}
-
-Display.prototype.leftTick = function() {
-  var offs = new THREE.Vector3(.25,0,0);
-  offs.applyQuaternion(this.camera.quaternion);
-  
-  this.camera.position.x += offs.x;
-  this.camera.position.y += offs.y;
-  this.camera.position.z += offs.z;
   this.camera.updateProjectionMatrix();
   this.renderer.render(this.scene, this.camera);
+}
+
+Display.prototype.ccwTick = function() {
+  this.theta -= 2 * Math.PI / 50;
+  this.updateCamera();
 }
 
 Display.prototype.upTick = function() {
-  var offs = new THREE.Vector3(0,-.25,0);
-  offs.applyQuaternion(this.camera.quaternion);
-  
-  this.camera.position.x += offs.x;
-  this.camera.position.y += offs.y;
-  this.camera.position.z += offs.z;
-  this.camera.updateProjectionMatrix();
-  this.renderer.render(this.scene, this.camera);
-
+  this.phi += 2 * Math.PI / 50;
+  if(this.phi > Math.PI/2) this.phi = Math.PI/2;
+  this.updateCamera();
 }
 
 Display.prototype.downTick = function() {
-  var offs = new THREE.Vector3(0,.25,0);
-  offs.applyQuaternion(this.camera.quaternion);
-  
-  this.camera.position.x += offs.x;
-  this.camera.position.y += offs.y;
-  this.camera.position.z += offs.z;
-  this.camera.updateProjectionMatrix();
-  this.renderer.render(this.scene, this.camera);
-
+  this.phi -= 2 * Math.PI / 50;
+  if(this.phi < -Math.PI/2 ) this.phi = -Math.PI/2 ;
+  this.updateCamera();
 }
 
-Display.prototype.rightTick = function() {
-  var offs = new THREE.Vector3(-.25,0,0);
-  offs.applyQuaternion(this.camera.quaternion);
-  
-  this.camera.position.x += offs.x;
-  this.camera.position.y += offs.y;
-  this.camera.position.z += offs.z;
-  this.camera.updateProjectionMatrix();
-  this.renderer.render(this.scene, this.camera);
-
-}
 
 Display.prototype.cwTick = function() {
-  var q = new THREE.Quaternion();
-  q.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 2 / 60 );
-  this.camera.quaternion.multiply(q);
-  this.renderer.render(this.scene, this.camera);
+  this.theta += 2 * Math.PI / 50;
+  this.updateCamera();
 }
 
 Display.prototype.fwdTick = function() {
-  var offs = new THREE.Vector3(0,0,.25);
-  offs.applyQuaternion(this.camera.quaternion);
-  
-  this.camera.position.x += offs.x;
-  this.camera.position.y += offs.y;
-  this.camera.position.z += offs.z;
-  this.camera.updateProjectionMatrix();
-  this.renderer.render(this.scene, this.camera);
+  this.r -= .5;
+  if(this.r < 1) this.r = 1;
+  this.updateCamera();
 }
 
 Display.prototype.backTick = function() {
-  var offs = new THREE.Vector3(0,0,-.25);
-  offs.applyQuaternion(this.camera.quaternion);
-  
-  this.camera.position.x += offs.x;
-  this.camera.position.y += offs.y;
-  this.camera.position.z += offs.z;
-  this.camera.updateProjectionMatrix();
-  this.renderer.render(this.scene, this.camera);
+  this.r += .5;
+  this.updateCamera();
 }
 
 Display.prototype.minusTick = function() {
