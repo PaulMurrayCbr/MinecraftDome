@@ -20,3 +20,6 @@
 .display-div { border: thin solid darkgray; margin: 1px; padding: 1px;}
 .display-div .display-content { border: thin solid darkgray; margin: 1px; padding: 1px;}
 .display-div .display-content .ui-widget-content { height: 50px; width:81px;}
+
+.display-div .display-controls .spanbutton { font-size: 200%; width:1.5em; background: #e0F0FF; }
+.display-div .display-controls .spanbutton:hover {  background: #c0d0FF; }

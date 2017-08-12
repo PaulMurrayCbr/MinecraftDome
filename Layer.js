@@ -1,3 +1,5 @@
+console.log("Layer.js start");
+
 var layeridx = 1;
 
 function Layer(element) {
@@ -39,7 +41,7 @@ Layer.prototype.init = function() {
   });
   
   $(this.canvas).mouseover($.proxy(canvasMouseover, this));
-  $(this.canvas).mouseover($.proxy(canvasMouseout, this));
+  $(this.canvas).mouseout($.proxy(canvasMouseout, this));
   $(this.canvas).mousemove($.proxy(canvasMousemove, this));
   $(this.canvas).mousedown($.proxy(canvasMousedown, this));
   $(this.canvas).mouseup($.proxy(canvasMouseup, this));
@@ -128,3 +130,5 @@ Layer.prototype.redrawCanvas = function(x, z) {
     ctx.fillText("⚓",(this.anchor[i].x+.5)*c.canvasScale+.5,(this.anchor[i].z+.5)*c.canvasScale+.5);
   }
 }
+
+console.log("Layer.js ok");

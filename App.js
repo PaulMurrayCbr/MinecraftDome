@@ -1,3 +1,5 @@
+console.log("App.js start");
+
 function App(element) {
   this.element = element;
   this.maskHidden = false;
@@ -18,7 +20,7 @@ App.prototype.init = function() {
   });
   
   $(this.canvas).mouseover($.proxy(canvasMouseover, this));
-  $(this.canvas).mouseover($.proxy(canvasMouseout, this));
+  $(this.canvas).mouseout($.proxy(canvasMouseout, this));
   $(this.canvas).mousemove($.proxy(canvasMousemove, this));
   $(this.canvas).mousedown($.proxy(canvasMousedown, this));
   $(this.canvas).mouseup($.proxy(canvasMouseup, this));
@@ -95,3 +97,4 @@ App.prototype.hideShowMask = function() {
   $(this.element).find(".surface-mask .hideshow > span").html(this.maskHidden ? "Closed" : "Open");
 }
 
+console.log("App.js ok");
