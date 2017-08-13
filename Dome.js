@@ -7,10 +7,6 @@ $(function() {
   body.controller = new App(body);
   body.controller.init();
   
-  var displayDiv;
-  displayDiv = $(".display-div")[0];
-  displayDiv.controller = new Display(displayDiv, body.controller);
-  displayDiv.controller.init();
 });
 
 function ctl(e) {

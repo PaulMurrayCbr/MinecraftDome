@@ -4,18 +4,19 @@ function App(element) {
   this.element = element;
   this.maskHidden = false;
   this.blocks = new Set();
+  
   this.bounds = {
-      min : {
-        x : 0,
-        y : 0,
-        z : 0
-      },
-      max : {
-        x : 0,
-        y : 0,
-        z : 0
-      }
+      min : {        x : 0,        y : 0,        z : 0      },
+      max : {        x : 0,        y : 0,        z : 0      },
+      w : {        x : 0,        y : 0,        z : 0      },
+      c : {        x : 0,        y : 0,        z : 0      },
+      diagonal: Math.sqrt(3)
     };
+  
+  var displayDiv = $(element).find(".display-div")[0];
+  displayDiv.controller = new Display(displayDiv, this);
+  this.displayController = displayDiv.controller;
+  
 }
 
 App.prototype.init = function() {
@@ -46,26 +47,18 @@ App.prototype.init = function() {
   this.canvasSetFill = "#D0D0FF";
   this.canvasNotsetFill = "#F0F0F0";
 
+  this.displayController.init();
+  
   this.redrawCanvas();
+  this.recalculateBounds();
 }
 
 App.prototype.recalculateBounds = function() {
-  this.bounds = {
-    min : {
-      x : 0,
-      y : 0,
-      z : 0
-    },
-    max : {
-      x : 0,
-      y : 0,
-      z : 0
-    }
-  };
+
   var gotone = false;
-  
-  b = this.bounds;
-  
+
+  var c = this;
+  var b = this.bounds;
 
   this.blocks.forEach(function(p) {
     if (!gotone) {
@@ -73,14 +66,47 @@ App.prototype.recalculateBounds = function() {
       b.max.x = p.x;
       b.min.z = p.z;
       b.max.z = p.z;
+      var y = c.getY(p)
+      b.min.y = y;
+      b.max.y = y;
+
       gotone = true
     } else {
       b.min.x = Math.min(b.min.x, p.x)
       b.max.x = Math.max(b.max.x, p.x)
       b.min.z = Math.min(b.min.z, p.z)
       b.max.z = Math.max(b.max.z, p.z)
+      var y = c.getY(p)
+      b.min.y = Math.min(b.min.y, y);
+      b.max.y = Math.max(b.max.y, y);
     }
   });
+
+  if(!gotone) {
+    b.min.x = 0;
+    b.max.x = 0;
+    b.min.z = 0;
+    b.max.z = 0;
+    b.min.y = 0;
+    b.max.y = 0;
+    
+  }
+  
+  b.w.x = (b.max.x - b.min.x);
+  b.w.y = (b.max.y - b.min.y);
+  b.w.z = (b.max.z - b.min.z);
+  b.c.x = (b.max.x + b.min.x) / 2;
+  b.c.y = (b.max.y + b.min.y) / 2;
+  b.c.z = (b.max.z + b.min.z) / 2;
+  
+  // add one to take into account the block size of 1
+  b.diagonal = Math.sqrt((b.w.x+1)*(b.w.x+1) + (b.w.y+1)*(b.w.y+1) + (b.w.y+1)*(b.w.y+1));
+  
+  c.displayController.updateCamera();  
+}
+
+App.prototype.getY = function(p) {
+  return 0;
 }
 
 App.prototype.blockUpdate = function(p, added) {

@@ -5,7 +5,7 @@ function Display(element, app) {
   this.app = app;
   this.theta = Math.PI/6;
   this.phi = Math.PI/6;
-  this.r = 50;
+  this.r = 10;
 
   $(element).find(".display-controls .spanbutton").each(function(i, e) {
     e.controller = new ContinuousButton(e);
@@ -37,33 +37,48 @@ Display.prototype.init = function() {
     resize : $.proxy(this.resizeFunc, this)
   });
 
-  var geometry = new THREE.BoxGeometry(1, 1, 1);
+  var geometry = new THREE.BoxGeometry(.8, .8, .8);
 
-  var material = new THREE.MeshLambertMaterial({
-    transparent : true,
-    opacity : .9,
-    color : 0x2194ce
+  var material = new THREE.MeshPhongMaterial({
+    //transparent : true,
+    //opacity : .8,
+    color : 0xFFFFFF// 0x80A0C0 //0x2194ce
   });
 
-  for (var x = 0; x <= 3; x += 2)
-    for (var y = -3; y <= 3; y += 2)
-      for (var z = -2; z <= 0; z += 2) {
+  c.rotator = new THREE.Group();
+  c.scene.add(c.rotator);
+  
+  c.offsetter = new THREE.Group();
+  c.rotator.add(c.offsetter);
+  
+  for (var x = 0; x <= 3; x ++)
+    for (var y = 0; y <= 3; y ++)
+      for (var z = 0; z <= 3; z ++) {
         var cube = new THREE.Mesh(geometry, material);
         cube.position.x = x;
         cube.position.y = y;
         cube.position.z = z;
-        c.scene.add(cube);
+        c.offsetter.add(cube);
       }
 
   var light = new THREE.AmbientLight(0x404040); // soft white light
   c.scene.add(light);
 
-  hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
-  hemiLight.color.setHSL(0.6, 1, 0.6);
-  hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-  hemiLight.position.set(0, 500, 0);
-  c.scene.add(hemiLight);
-
+  var directionalLight = new THREE.DirectionalLight( 0xFF0000, 0.5 ); 
+  directionalLight.position.x = -1;
+  directionalLight.position.z = -1;
+  c.scene.add( directionalLight );  
+  
+  var directionalLight = new THREE.DirectionalLight( 0x00FF00, 0.5 ); 
+  directionalLight.position.x = 1;
+  directionalLight.position.z = -1;
+  c.scene.add( directionalLight );  
+  
+  var directionalLight = new THREE.DirectionalLight( 0x0000FF, 0.5 ); 
+  directionalLight.position.x = 0;
+  directionalLight.position.z = 1;
+  c.scene.add( directionalLight );  
+  
   this.updateCamera();
   this.resizeFunc();
 
@@ -104,26 +119,31 @@ Display.prototype.resizeFunc = function(event, ui) {
 }
 
 Display.prototype.updateCamera = function() {
-  this.camera.position.x = (this.app.bounds.max.x + this.app.bounds.min.x)/2;
-  this.camera.position.y = (this.app.bounds.max.y + this.app.bounds.min.y)/2;
-  this.camera.position.z = (this.app.bounds.max.z + this.app.bounds.min.z)/2;
+  this.offsetter.position.x = -this.app.bounds.c.x;
+  this.offsetter.position.y = -this.app.bounds.c.y;
+  this.offsetter.position.z = -this.app.bounds.c.z;
   
-  this.camera.position.x += this.r * Math.sin(this.theta) * Math.cos(this.phi);
-  this.camera.position.z += this.r * Math.cos(this.theta) * Math.cos(this.phi);
-  this.camera.position.y += this.r * Math.sin(this.phi);
+  this.camera.position.x = 0;
+  this.camera.position.z = this.r * Math.cos(this.phi);
+  this.camera.position.y = this.r * Math.sin(this.phi);
   
-  this.camera.lookAt(new THREE.Vector3(
-    (this.app.bounds.max.x + this.app.bounds.min.x)/2,
-    (this.app.bounds.max.y + this.app.bounds.min.y)/2,
-    (this.app.bounds.max.z + this.app.bounds.min.z)/2
-  ));
+  this.camera.lookAt(new THREE.Vector3(0,0,0));
   
   this.camera.updateProjectionMatrix();
   this.renderer.render(this.scene, this.camera);
 }
 
 Display.prototype.ccwTick = function() {
-  this.theta -= 2 * Math.PI / 50;
+  var m = new THREE.Matrix4();
+  m.makeRotationY(2 * Math.PI / 50);
+  this.rotator.applyMatrix(m);
+  this.updateCamera();
+}
+
+Display.prototype.cwTick = function() {
+  var m = new THREE.Matrix4();
+  m.makeRotationY(-2 * Math.PI / 50);
+  this.rotator.applyMatrix(m);
   this.updateCamera();
 }
 
@@ -140,25 +160,23 @@ Display.prototype.downTick = function() {
 }
 
 
-Display.prototype.cwTick = function() {
-  this.theta += 2 * Math.PI / 50;
-  this.updateCamera();
-}
-
 Display.prototype.fwdTick = function() {
   this.r -= .5;
-  if(this.r < 1) this.r = 1;
+  if(this.r < this.app.bounds.diagonal/2+1) this.r = this.app.bounds.diagonal/2+1;
   this.updateCamera();
 }
 
 Display.prototype.backTick = function() {
   this.r += .5;
+  if(this.r > this.app.bounds.diagonal * 20) {
+    this.r = this.app.bounds.diagonal * 20;
+  }
   this.updateCamera();
 }
 
 Display.prototype.minusTick = function() {
   if (this.camera.fov < 145) {
-    this.camera.fov *= 1.1;
+    this.camera.fov += 5;
     this.camera.updateProjectionMatrix();
     this.renderer.render(this.scene, this.camera);
   }
@@ -166,7 +184,7 @@ Display.prototype.minusTick = function() {
 
 Display.prototype.plusTick = function() {
   if (this.camera.fov > 20) {
-    this.camera.fov /= 1.1;
+    this.camera.fov -= 5;
     this.camera.updateProjectionMatrix();
     this.renderer.render(this.scene, this.camera);
   }
