@@ -43,16 +43,6 @@ Display.prototype.init = function() {
   c.offsetter = new THREE.Group();
   c.rotator.add(c.offsetter);
   
-  for (var x = 0; x <= 3; x ++)
-    for (var y = 0; y <= 3; y ++)
-      for (var z = 0; z <= 3; z ++) {
-        var cube = this.anchorMesh();
-        cube.position.x = x;
-        cube.position.y = y;
-        cube.position.z = z;
-        c.offsetter.add(cube);
-      }
-
   var light = new THREE.AmbientLight(0x404040); // soft white light
   c.scene.add(light);
 
@@ -62,11 +52,13 @@ Display.prototype.init = function() {
   directionalLight.position.z = 1;
   c.scene.add( directionalLight );  
 
-  var hlight = new THREE.HemisphereLight( 0xbbddff, 0x080820, .5 );
+  var hlight = new THREE.HemisphereLight( 0xbbddff, 0x080820, .75 );
   c.scene.add( hlight );  
   
   this.updateCamera();
   this.resizeFunc();
+  this.repaint();
+  
 
   $(this.element).find(".display-controls .spanbutton").each(function(i, e) {
     e.controller.init();
@@ -88,28 +80,8 @@ Display.prototype.init = function() {
       .proxy(this.plusTick, this);
   $(this.element).find(".display-controls #display-minus")[0].controller.onTick = $
       .proxy(this.minusTick, this);
+  
 }
-
-Display.prototype.blockShape = new THREE.BoxGeometry(.95, .95, .95);
-
-Display.prototype.blockMaterial = new THREE.MeshLambertMaterial({
-  transparent : true,
-  opacity : .6,
-  color : 0xF0F0F0// 0x80A0C0 //0x2194ce
-});
-
-Display.prototype.blockMesh = function() { return new THREE.Mesh(this.blockShape, this.blockMaterial); }
-
-Display.prototype.blockShape = new THREE.BoxGeometry(.95, .95, .95);
-
-Display.prototype.anchorMaterial = new THREE.MeshLambertMaterial({
-  transparent : true,
-  opacity : .9,
-  color : 0x808080
-});
-
-Display.prototype.anchorMesh = function() { return new THREE.Mesh(this.blockShape, this.anchorMaterial); }
-
 
 
 Display.prototype.resizeFunc = function(event, ui) {
@@ -138,6 +110,10 @@ Display.prototype.updateCamera = function() {
   this.camera.lookAt(new THREE.Vector3(0,0,0));
   
   this.camera.updateProjectionMatrix();
+  this.repaint();
+}
+
+Display.prototype.repaint = function() {
   this.renderer.render(this.scene, this.camera);
 }
 
@@ -145,25 +121,25 @@ Display.prototype.ccwTick = function() {
   var m = new THREE.Matrix4();
   m.makeRotationY(2 * Math.PI / 50);
   this.rotator.applyMatrix(m);
-  this.updateCamera();
+  this.repaint();
 }
 
 Display.prototype.cwTick = function() {
   var m = new THREE.Matrix4();
   m.makeRotationY(-2 * Math.PI / 50);
   this.rotator.applyMatrix(m);
-  this.updateCamera();
+  this.repaint();
 }
 
 Display.prototype.upTick = function() {
-  this.phi += 2 * Math.PI / 50;
-  if(this.phi > Math.PI/2) this.phi = Math.PI/2;
+  this.phi -= 2 * Math.PI / 50;
+  if(this.phi < -Math.PI/2) this.phi = -Math.PI/2;
   this.updateCamera();
 }
 
 Display.prototype.downTick = function() {
-  this.phi -= 2 * Math.PI / 50;
-  if(this.phi < -Math.PI/2 ) this.phi = -Math.PI/2 ;
+  this.phi += 2 * Math.PI / 50;
+  if(this.phi > Math.PI/2 ) this.phi = Math.PI/2 ;
   this.updateCamera();
 }
 

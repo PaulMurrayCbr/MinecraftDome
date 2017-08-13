@@ -16,6 +16,7 @@ function App(element) {
   var displayDiv = $(element).find(".display-div")[0];
   displayDiv.controller = new Display(displayDiv, this);
   this.displayController = displayDiv.controller;
+  this.drawer = new BlockDrawer(this, this.displayController);
   
 }
 
@@ -48,6 +49,7 @@ App.prototype.init = function() {
   this.canvasNotsetFill = "#F0F0F0";
 
   this.displayController.init();
+  this.drawer.init();
   
   this.redrawCanvas();
   this.recalculateBounds();
@@ -109,10 +111,6 @@ App.prototype.getY = function(p) {
   return 0;
 }
 
-App.prototype.blockUpdate = function(p, added) {
-  this.recalculateBounds();
-}
-
 App.prototype.redrawCanvas = function(x, z) {
   canvasRedraw(this, x, z);
 
@@ -165,6 +163,8 @@ App.prototype.addLayer = function() {
   $(this.element).find("#layers").prepend(layer);
 
   layer.controller.init();
+  
+  this.layerAdded(layer.controller);
 }
 
 App.prototype.hideShowMask = function() {
@@ -173,6 +173,31 @@ App.prototype.hideShowMask = function() {
       this.maskHidden ? "none" : "block");
   $(this.element).find(".surface-mask .hideshow > span").html(
       this.maskHidden ? "Closed" : "Open");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// these functions have the job of adjusting the contents of the Drawer
+// by manipulating the contents of the THREE.GRoup this.displayController.offsetter
+
+App.prototype.blockUpdate = function(p, added) {
+  this.recalculateBounds();
+  this.drawer.blockUpdate(p, added);
+}
+
+App.prototype.layerBlockUpdate = function(layer, p, added) {
+  this.drawer.layerBlockUpdate(layer, p, added); 
+}
+
+App.prototype.layerAdded = function(layer) {
+  this.drawer.layerAdded(layer);
+}
+
+App.prototype.layerRemoved = function(layer) {
+  this.drawer.layerRemoved(layer);
+}
+
+App.prototype.layerEnabled = function(layer, enabled) {
+  this.drawer.layerEnabled(layer, enabled);
 }
 
 console.log("App.js ok");

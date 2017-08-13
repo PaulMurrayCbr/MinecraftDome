@@ -9,6 +9,9 @@ function Layer(element, app) {
   this.hidden = false;
   this.enabled = true;
   
+  this.y_0 = 0;
+  this.y_x = 0;
+  this.y_z = 0;
   
   this.height = 20;
   this.width = 20;
@@ -64,7 +67,6 @@ Layer.prototype.init = function() {
     $(this.element).find(".layer-anchor." + i + " input.z").val(this.anchor[i].z);
   }
   
-  console.log($(this.element).find(".layer-anchor input"));
   $(this.element).find(".layer-anchor input").change($.proxy(anchorUpdated, this))
   
   this.redrawCanvas();
@@ -89,6 +91,9 @@ function anchorUpdated() {
     
   }
   
+  // TODO: recalculate y_0, y_x, y_z
+  
+  
   this.redrawCanvas();
 }
 
@@ -102,6 +107,8 @@ Layer.prototype.enabledisable = function() {
   this.enabled = !this.enabled;
   $(this.element).find(".enabledisable > span").html(this.enabled ? "Enabled" : "Disabled");
   ctl($(".surface-mask .mask-display")[0]).redrawCanvas();
+  
+  this.app.layerEnabled(this, this.enabled);
 }
 
 Layer.prototype.delete = function() {
@@ -109,11 +116,12 @@ Layer.prototype.delete = function() {
     $(this.element).remove();
     this.allLayers.delete(this);
     ctl($(".surface-mask .mask-display")[0]).redrawCanvas();
+    this.app.layerRemoved(this);
   }
 }
 
 Layer.prototype.blockUpdate = function(p, added) {
-  
+  this.app.layerBlockUpdate(this, p, added);
 }
 
 Layer.prototype.redrawCanvas = function(x, z) {
@@ -135,6 +143,10 @@ Layer.prototype.redrawCanvas = function(x, z) {
     ctx.fillStyle = i;
     ctx.fillText("⚓",(this.anchor[i].x+.5)*c.canvasScale+.5,(this.anchor[i].z+.5)*c.canvasScale+.5);
   }
+}
+
+Layer.prototype.getY = function(p) {
+  return this.y_0 + p.x * this.y_x + p.z * this.y_z;
 }
 
 console.log("Layer.js ok");
