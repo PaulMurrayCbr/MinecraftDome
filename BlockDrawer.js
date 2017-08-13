@@ -12,7 +12,7 @@ BlockDrawer.prototype.init = function() {
   for (var x = 0; x <= 3; x ++)
     for (var y = 0; y <= 3; y ++)
       for (var z = 0; z <= 3; z ++) {
-        var cube = this.anchorMesh();
+        var cube = (x+y+z)%2==0 ? this.anchorMesh() : this.blockMesh();
         cube.position.x = x;
         cube.position.y = y;
         cube.position.z = z;
@@ -22,7 +22,7 @@ BlockDrawer.prototype.init = function() {
 
 }
 
-BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(.95, .95, .95);
+BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
 
 BlockDrawer.prototype.blockMaterial = new THREE.MeshLambertMaterial({
   transparent : true,
