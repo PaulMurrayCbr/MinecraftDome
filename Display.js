@@ -40,9 +40,9 @@ Display.prototype.init = function() {
   var geometry = new THREE.BoxGeometry(.8, .8, .8);
 
   var material = new THREE.MeshPhongMaterial({
-    //transparent : true,
-    //opacity : .8,
-    color : 0xFFFFFF// 0x80A0C0 //0x2194ce
+    transparent : true,
+    opacity : .6,
+    color : 0xF0F0F0// 0x80A0C0 //0x2194ce
   });
 
   c.rotator = new THREE.Group();
@@ -64,20 +64,14 @@ Display.prototype.init = function() {
   var light = new THREE.AmbientLight(0x404040); // soft white light
   c.scene.add(light);
 
-  var directionalLight = new THREE.DirectionalLight( 0xFF0000, 0.5 ); 
-  directionalLight.position.x = -1;
-  directionalLight.position.z = -1;
-  c.scene.add( directionalLight );  
-  
-  var directionalLight = new THREE.DirectionalLight( 0x00FF00, 0.5 ); 
-  directionalLight.position.x = 1;
-  directionalLight.position.z = -1;
-  c.scene.add( directionalLight );  
-  
-  var directionalLight = new THREE.DirectionalLight( 0x0000FF, 0.5 ); 
-  directionalLight.position.x = 0;
+  var directionalLight = new THREE.DirectionalLight(0xC0C080); // yellow light over the right shoulder
+  directionalLight.position.x = .5;
+  directionalLight.position.y = 1.5;
   directionalLight.position.z = 1;
-  c.scene.add( directionalLight );  
+  //c.scene.add( directionalLight );  
+
+  var hlight = new THREE.HemisphereLight( 0xbbddff, 0x080820, .5 );
+  c.scene.add( hlight );  
   
   this.updateCamera();
   this.resizeFunc();
