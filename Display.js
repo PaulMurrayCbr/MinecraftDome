@@ -37,14 +37,6 @@ Display.prototype.init = function() {
     resize : $.proxy(this.resizeFunc, this)
   });
 
-  var geometry = new THREE.BoxGeometry(.8, .8, .8);
-
-  var material = new THREE.MeshPhongMaterial({
-    transparent : true,
-    opacity : .6,
-    color : 0xF0F0F0// 0x80A0C0 //0x2194ce
-  });
-
   c.rotator = new THREE.Group();
   c.scene.add(c.rotator);
   
@@ -54,7 +46,7 @@ Display.prototype.init = function() {
   for (var x = 0; x <= 3; x ++)
     for (var y = 0; y <= 3; y ++)
       for (var z = 0; z <= 3; z ++) {
-        var cube = new THREE.Mesh(geometry, material);
+        var cube = this.anchorMesh();
         cube.position.x = x;
         cube.position.y = y;
         cube.position.z = z;
@@ -64,11 +56,11 @@ Display.prototype.init = function() {
   var light = new THREE.AmbientLight(0x404040); // soft white light
   c.scene.add(light);
 
-  var directionalLight = new THREE.DirectionalLight(0xC0C080); // yellow light over the right shoulder
+  var directionalLight = new THREE.DirectionalLight(0xF0F080, .5); // yellow light over the right shoulder
   directionalLight.position.x = .5;
   directionalLight.position.y = 1.5;
   directionalLight.position.z = 1;
-  //c.scene.add( directionalLight );  
+  c.scene.add( directionalLight );  
 
   var hlight = new THREE.HemisphereLight( 0xbbddff, 0x080820, .5 );
   c.scene.add( hlight );  
@@ -97,6 +89,28 @@ Display.prototype.init = function() {
   $(this.element).find(".display-controls #display-minus")[0].controller.onTick = $
       .proxy(this.minusTick, this);
 }
+
+Display.prototype.blockShape = new THREE.BoxGeometry(.95, .95, .95);
+
+Display.prototype.blockMaterial = new THREE.MeshLambertMaterial({
+  transparent : true,
+  opacity : .6,
+  color : 0xF0F0F0// 0x80A0C0 //0x2194ce
+});
+
+Display.prototype.blockMesh = function() { return new THREE.Mesh(this.blockShape, this.blockMaterial); }
+
+Display.prototype.blockShape = new THREE.BoxGeometry(.95, .95, .95);
+
+Display.prototype.anchorMaterial = new THREE.MeshLambertMaterial({
+  transparent : true,
+  opacity : .9,
+  color : 0x808080
+});
+
+Display.prototype.anchorMesh = function() { return new THREE.Mesh(this.blockShape, this.anchorMaterial); }
+
+
 
 Display.prototype.resizeFunc = function(event, ui) {
   // resize the canvas pixels - not the same as the canvas size!
