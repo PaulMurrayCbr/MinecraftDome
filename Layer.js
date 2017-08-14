@@ -93,6 +93,7 @@ function anchorUpdated() {
   
   // TODO: recalculate y_0, y_x, y_z
   
+  this.app.layerUpdatedYvalues(this);
   
   this.redrawCanvas();
 }

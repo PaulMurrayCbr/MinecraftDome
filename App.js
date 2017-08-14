@@ -200,4 +200,9 @@ App.prototype.layerEnabled = function(layer, enabled) {
   this.drawer.layerEnabled(layer, enabled);
 }
 
+App.prototype.layerUpdatedYvalues = function(layer) {
+	  this.drawer.layerUpdatedYvalues(layer);
+	
+}
+
 console.log("App.js ok");

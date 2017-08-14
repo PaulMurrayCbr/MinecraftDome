@@ -4,6 +4,8 @@ console.log("BlockDrawer.js start");
 function BlockDrawer(app, displayController) {
   this.app = app;
   this.drawer = app.displayController;
+  
+  this.layerInfo = new Map();
 }
 
 BlockDrawer.prototype.init = function() {
@@ -45,20 +47,85 @@ BlockDrawer.prototype.blockUpdate = function(p, added) {
 }
 
 BlockDrawer.prototype.layerBlockUpdate = function(layer, p, added) {
+  if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));
+  this.layerInfo.get(layer).layerBlockUpdate(p, added);
   this.drawer.repaint();
 }
 
 BlockDrawer.prototype.layerAdded = function(layer) {
+  if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));
+  this.layerInfo.get(layer).layerAdded();
   this.drawer.repaint();
 }
 
 BlockDrawer.prototype.layerRemoved = function(layer) {
+  if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));
+  this.layerInfo.get(layer).layerRemoved();
+  this.layerInfo.delete(layer);
   this.drawer.repaint();
 }
 
 BlockDrawer.prototype.layerEnabled = function(layer, enabled) {
+  if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));
+  this.layerInfo.get(layer).layerEnabled(enabled);
   this.drawer.repaint();
 }
+
+BlockDrawer.prototype.layerUpdatedYvalues = function(layer) {
+  if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));
+  this.layerInfo.get(layer).layerUpdatedYvalues();
+  this.drawer.repaint();
+}
+
+
+BlockDrawer.prototype.LayerInfo = function(drawer, layer) {
+	this.drawer = drawer;
+	this.layer = layer;
+	this.app = drawer.app;
+	this.container = drawer.container;
+	
+	this.group = new THREE.Group();
+	
+	this.cubes = new Map();
+}
+
+
+BlockDrawer.prototype.LayerInfo.prototype.layerBlockUpdate = function(p, added) {
+	if(added) {
+		var cube = this.drawer.anchorMesh();
+		cube.position.x = p.x;
+		cube.position.z = p.z;
+		cube.position.y = this.layer.getY(p);
+		this.cubes.set(p, cube);
+		this.group.add(cube);
+	}
+	else {
+		this.group.remove(this.cubes.get(p));
+		this.cubes.delete(p);
+	}
+}
+
+BlockDrawer.prototype.LayerInfo.prototype.layerAdded = function() {
+	this.container.add(this.group);
+}
+
+BlockDrawer.prototype.LayerInfo.prototype.layerRemoved = function() {
+	this.container.remove(this.group);
+}
+
+BlockDrawer.prototype.LayerInfo.prototype.layerEnabled = function(enabled) {
+	if(enabled) {
+		this.container.add(this.group);
+	}
+	else {
+		this.container.remove(this.group);
+	}
+}
+
+BlockDrawer.prototype.LayerInfo.prototype.layerUpdatedYvalues = function() {
+	
+}
+
 
 console.log("BlockDrawer.js ok");
 

@@ -19,7 +19,7 @@ Display.prototype.init = function() {
   c.container = $(this.element).find(".display-content")[0];
 
   c.scene = new THREE.Scene();
-  c.scene.background = new THREE.Color(0xf8f8f8);
+  c.scene.background = new THREE.Color(0x607060); // 0xf8f8f8);
 
   c.camera = new THREE.PerspectiveCamera(10, 1, 1, 200);
   
@@ -44,16 +44,29 @@ Display.prototype.init = function() {
   c.rotator.add(c.offsetter);
   
   var light = new THREE.AmbientLight(0x404040); // soft white light
-  c.scene.add(light);
+  //c.scene.add(light);
 
-  var directionalLight = new THREE.DirectionalLight(0xF0F080, .5); // yellow light over the right shoulder
-  directionalLight.position.x = .5;
-  directionalLight.position.y = 1.5;
+  var directionalLight = new THREE.DirectionalLight(0xE0E0E0, .75); // white light over the left shoulder
+  directionalLight.position.x = -1;
+  directionalLight.position.y = 1;
   directionalLight.position.z = 1;
   c.scene.add( directionalLight );  
 
-  var hlight = new THREE.HemisphereLight( 0xbbddff, 0x080820, .75 );
-  c.scene.add( hlight );  
+
+  var directionalLight = new THREE.DirectionalLight(0xF0F0C0, .75); // slightly yellow light over the right shoulder
+  directionalLight.position.x = 1;
+  directionalLight.position.y = 1;
+  directionalLight.position.z = 1;
+  c.scene.add( directionalLight );  
+
+  directionalLight = new THREE.DirectionalLight(0xA0A0F0, .75); // slightly blue light above and to the back
+  directionalLight.position.x = 0;
+  directionalLight.position.y = 1;
+  directionalLight.position.z = -Math.sqrt(3)/2;  // 60 degrees
+  c.scene.add( directionalLight );  
+
+//  var hlight = new THREE.HemisphereLight( 0xbbddff, 0x080820, .5 );
+//  c.scene.add( hlight );  
   
   this.updateCamera();
   this.resizeFunc();
