@@ -175,9 +175,39 @@ App.prototype.hideShowMask = function() {
       this.maskHidden ? "Closed" : "Open");
 }
 
+App.prototype.shiftall = function(x,z) {
+  console.log("shiftall");
+  
+  var nope = false;
+  
+  var newblocks = new Set();
+  this.blocks.forEach(function (p){
+    if(p.x+x >= 0 && p.z+z >=0) {
+      newblocks.add(up(p.x+x, p.z+z));
+    }
+    else {
+      // can't move this far
+      nope = true;
+      return;
+    }
+  }); 
+
+  if(nope) return;
+  
+  this.blocks = newblocks;
+  
+  this.redrawCanvas();
+  this.updateAllMask();
+}
+
 //////////////////////////////////////////////////////////////////////////
 // these functions have the job of adjusting the contents of the Drawer
 // by manipulating the contents of the THREE.GRoup this.displayController.offsetter
+
+App.prototype.updateAllMask = function() {
+  this.recalculateBounds();
+  this.drawer.updateAllMask(this.blocks);
+}
 
 App.prototype.blockUpdate = function(p, added) {
   this.recalculateBounds();

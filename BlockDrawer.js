@@ -11,16 +11,18 @@ function BlockDrawer(app, displayController) {
 BlockDrawer.prototype.init = function() {
   this.container = this.drawer.offsetter;
   this.blocks = new Map();
+  this.blockContainer = new THREE.Group();
+  this.container.add(this.blockContainer);
   
-//  for (var x = 0; x <= 3; x ++)
-//    for (var y = 0; y <= 3; y ++)
-//      for (var z = 0; z <= 3; z ++) {
-//        var cube = (x+y+z)%2==0 ? this.anchorMesh() : this.blockMesh();
-//        cube.position.x = x;
-//        cube.position.y = y;
-//        cube.position.z = z;
-//        this.container.add(cube);
-//      }
+// for (var x = 0; x <= 3; x ++)
+// for (var y = 0; y <= 3; y ++)
+// for (var z = 0; z <= 3; z ++) {
+// var cube = (x+y+z)%2==0 ? this.anchorMesh() : this.blockMesh();
+// cube.position.x = x;
+// cube.position.y = y;
+// cube.position.z = z;
+// this.container.add(cube);
+// }
 
 
 }
@@ -43,6 +45,27 @@ BlockDrawer.prototype.blockMesh = function() { return new THREE.Mesh(this.blockS
 
 BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.blockShape, this.anchorMaterial); }
 
+BlockDrawer.prototype.updateAllMask = function(blocks) {
+  this.container.remove(this.blockContainer);
+  this.blockContainer = new THREE.Group();
+  this.container.add(this.blockContainer);
+  
+  var c = this;
+  blocks.forEach(function (p) {
+    if(!c.blocks.has(p)) {
+      var block =  c.blockMesh();
+      c.blocks.set(p, block);
+      block.position.x = p.x;
+      block.position.z = p.z;
+    }
+    var block = c.blocks.get(p);
+    block.position.y = c.app.getY(p);
+    c.blockContainer.add(block);
+    
+  });
+  this.drawer.updateCamera();
+}
+
 BlockDrawer.prototype.blockUpdate = function(p, added) {
 	if(added) {
 		if(!this.blocks.has(p)) {
@@ -53,15 +76,14 @@ BlockDrawer.prototype.blockUpdate = function(p, added) {
 		}
 		var block = this.blocks.get(p);
 		block.position.y = this.app.getY(p);
-		this.container.add(block);
+		this.blockContainer.add(block);
 	}
 	else {
 		if(this.blocks.has(p)) {
-			this.container.remove(this.blocks.get(p));
+			this.blockContainer.remove(this.blocks.get(p));
 		}
 		
 	}
-	
 	
   this.drawer.updateCamera();
 }

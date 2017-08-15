@@ -41,9 +41,18 @@
 		Surface mask <span class="spanbutton hideshow"
 			onclick="ctl(this).hideShowMask()"><span>Open</span></span>
 		<div class="content">
-			<div class="mask-controls"></div>
 			<div class="mask-display">
 				<canvas class="ui-widget-content"></canvas>
+			</div>
+			<div class="mask-controls">
+			<span class="spanbutton left-1" onclick="ctl(this).shiftall(-1, 0)">←1</span>
+			<span class="spanbutton left-8" onclick="ctl(this).shiftall(-8, 0)">←8</span>
+			<span class="spanbutton up-1" onclick="ctl(this).shiftall(0, -1)">↑ 1</span>
+			<span class="spanbutton up-8" onclick="ctl(this).shiftall(0, -8)">↑ 8</span>
+			<span class="spanbutton down-1" onclick="ctl(this).shiftall(0, 1)">↓1</span>
+			<span class="spanbutton down-8" onclick="ctl(this).shiftall(0, 8)">↓8</span>
+			<span class="spanbutton right-1" onclick="ctl(this).shiftall(1, 0)">→1</span>
+			<span class="spanbutton right-8" onclick="ctl(this).shiftall(8, 0)">→8</span>
 			</div>
 		</div>
 	</div>
