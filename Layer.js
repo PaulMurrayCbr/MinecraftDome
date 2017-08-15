@@ -67,12 +67,13 @@ Layer.prototype.init = function() {
     $(this.element).find(".layer-anchor." + i + " input.z").val(this.anchor[i].z);
   }
   
-  $(this.element).find(".layer-anchor input").change($.proxy(anchorUpdated, this))
+  $(this.element).find(".layer-anchor input").change($.proxy(this.anchorUpdated, this))
   
   this.redrawCanvas();
 }
 
-function anchorUpdated() {
+
+Layer.prototype.anchorUpdated = function() {
   for(i in this.anchor) {
     var f;
     
@@ -87,11 +88,37 @@ function anchorUpdated() {
     f = parseFloat($(this.element).find(".layer-anchor." + i + " input.y").val());
     $(this.element).find(".layer-anchor." + i + " input.y").val(f);
     this.anchor[i].y = f;
-    
-    
   }
   
-  // TODO: recalculate y_0, y_x, y_z
+  if((this.anchor.red.x!=this.anchor.green.x || this.anchor.red.z!=this.anchor.green.z) 
+      && (this.anchor.red.x!=this.anchor.blue.x || this.anchor.red.z!=this.anchor.blue.z) 
+      && (this.anchor.green.x!=this.anchor.blue.x || this.anchor.green.z!=this.anchor.blue.z) 
+      )
+  {
+    // calculate (red->green) X (red->blue)
+  
+    var rg = new THREE.Vector3(this.anchor.green.x-this.anchor.red.x, this.anchor.green.y-this.anchor.red.y, this.anchor.green.z-this.anchor.red.z);
+    var rb = new THREE.Vector3 (this.anchor.blue.x-this.anchor.red.x, this.anchor.blue.y-this.anchor.red.y, this.anchor.blue.z-this.anchor.red.z);
+    var cross = new THREE.Vector3();
+    cross.crossVectors(rg, rb);
+
+    // ok. The cross product is orthogonal to the anchor plane. The equation for the plane becomes
+    // cross.x (x - red.x) + cross.z (z - red.z) + cross.y (y - red.y) = 0
+    // wee need to solve this for y
+    
+    // cross.x (x - red.x) + cross.z (z - red.z) + cross.y y - cross.y red.y = 0
+    // cross.x (x - red.x) + cross.z (z - red.z) - cross.y red.y = - cross.y y
+    // - cross.x (x - red.x) - cross.z (z - red.z) + cross.y red.y = cross.y y
+    // - cross.x (x - red.x) / cross.y - cross.z (z - red.z) / cross.y + red.y =  y
+    
+    // -cross.x/cross.y (x - red.x)  -cross.z/cross.y (z - red.z)  + red.y =  y
+      
+    // x (- cross.x/cross.y) + z(-cross.z/cross.y) + red.y + cross.x/cross.y red.x + cross.z/cross.y red.z
+    
+    this.y_x = -cross.x/cross.y;
+    this.y_z = -cross.z/cross.y;
+    this.y_0 = this.anchor.red.y + cross.x/cross.y*this.anchor.red.x + cross.z/cross.y*this.anchor.red.z;
+  }
   
   this.app.layerUpdatedYvalues(this);
   
@@ -123,6 +150,43 @@ Layer.prototype.delete = function() {
 
 Layer.prototype.blockUpdate = function(p, added) {
   this.app.layerBlockUpdate(this, p, added);
+}
+
+Layer.prototype.shiftall = function(x, z) {
+  var nope = false;
+  
+  this.blocks.forEach(function(p) {
+    if(p.x + x < 0 || p.z + z < 0) {
+      nope = true;
+      return;
+    }
+  });
+  
+  for(i in this.anchor) {
+    if(this.anchor[i].x + x < 0 || this.anchor[i].z + z < 0) {
+      nope = true;
+      break;
+    }
+  }
+  
+  if(nope) return;
+  
+  var newBlocks = new Set();
+  
+  this.blocks.forEach(function(p) {
+    newBlocks.add(up(p.x+x, p.z+z));
+  });
+  
+  this.blocks = newBlocks;
+  
+  for(i in this.anchor) {
+    $(this.element).find(".layer-anchor." + i + " input.x").val(this.anchor[i].x + x);
+    $(this.element).find(".layer-anchor." + i + " input.z").val(this.anchor[i].z + z);
+  }
+  this.anchorUpdated();
+  this.redrawCanvas();
+  
+  this.app.layerAllUpdated(this);  
 }
 
 Layer.prototype.redrawCanvas = function(x, z) {

@@ -5,7 +5,7 @@ function Display(element, app) {
   this.app = app;
   this.theta = Math.PI/6;
   this.phi = Math.PI/6;
-  this.r = 10;
+  this.r = 20;
 
   $(element).find(".display-controls .spanbutton").each(function(i, e) {
     e.controller = new ContinuousButton(e);

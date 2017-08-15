@@ -28,22 +28,23 @@ BlockDrawer.prototype.init = function() {
 }
 
 BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
+BlockDrawer.prototype.anchorShape = new THREE.OctahedronGeometry(7/8/2);
 
 BlockDrawer.prototype.blockMaterial = new THREE.MeshLambertMaterial({
   transparent : true,
   opacity : .6,
-  color : 0xF0F0F0// 0x80A0C0 //0x2194ce
+  color : 0xD0D0F0// 0x80A0C0 //0x2194ce
 });
 
 BlockDrawer.prototype.anchorMaterial = new THREE.MeshLambertMaterial({
-  transparent : true,
-  opacity : .9,
-  color : 0x808080
+  //transparent : true,
+  //opacity : .9,
+  color : 0xFF4040
 });
 
 BlockDrawer.prototype.blockMesh = function() { return new THREE.Mesh(this.blockShape, this.blockMaterial); }
 
-BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.blockShape, this.anchorMaterial); }
+BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.anchorShape, this.anchorMaterial); }
 
 BlockDrawer.prototype.updateAllMask = function(blocks) {
   this.container.remove(this.blockContainer);
@@ -91,6 +92,12 @@ BlockDrawer.prototype.blockUpdate = function(p, added) {
 BlockDrawer.prototype.layerBlockUpdate = function(layer, p, added) {
   if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));
   this.layerInfo.get(layer).layerBlockUpdate(p, added);
+  this.drawer.repaint();
+}
+
+BlockDrawer.prototype.layerAllUpdated = function(layer) {
+  if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));
+  this.layerInfo.get(layer).layerAllUpdated();
   this.drawer.repaint();
 }
 
@@ -165,7 +172,14 @@ BlockDrawer.prototype.LayerInfo.prototype.layerEnabled = function(enabled) {
 }
 
 BlockDrawer.prototype.LayerInfo.prototype.layerUpdatedYvalues = function() {
-	
+  var c = this;
+  this.cubes.forEach(function(cube,p) {
+      cube.position.y = c.layer.getY(p);
+  });
+}
+
+BlockDrawer.prototype.LayerInfo.prototype.layerAllUpdated = function() {
+  
 }
 
 
