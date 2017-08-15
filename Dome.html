@@ -25,12 +25,9 @@
 		Sorry about the UI being a bit rough.</p>
 	<p>
 	<ol>
-		<li>Add a layer.</li>
-		<li>Draw your support blocks on the layer (eg: a circle, two or
-			three points).</li>
-		<li>(optional) Adjust the anchors to change the height of your
-			layer, or to give it a slope.</li>
-		<li>On the surface mask, draw in a shape covering your supports.</li>
+		<li>On the surface mask, draw in a solid shape. A circle or something.</li>
+		<li>Add an anchor layer.</li>
+		<li>Add at least one anchor square within the area covered by your surface.</li>
 	</ol>
 	</p>
 	<p>Coordinates are minecraft coordinates. 0,0 is at the top-left of
@@ -57,7 +54,7 @@
 		</div>
 	</div>
 
-	<button onclick="ctl(this).addLayer()">Add layer</button>
+	<button onclick="ctl(this).addLayer()">Add anchor layer</button>
 	<div id="layers"></div>
 
 	<div class="layer template">
@@ -84,19 +81,19 @@
 					<div class="layer-anchor red">
 						<span style="color: red;">⚓</span> X <input class="x"
 							type="number" value="10" /> Z <input class="z" type="number"
-							value="10" /> Y <input class="y" step="0.1" type="number"
+							value="10" /> Y <input class="y" type="number"
 							value="0" />
 					</div>
 					<div class="layer-anchor green">
 						<span style="color: green;">⚓</span> X <input class="x"
 							type="number" value="10" /> Z <input class="z" type="number"
-							value="10" /> Y <input class="y" step="0.1" type="number"
+							value="10" /> Y <input class="y" type="number"
 							value="0" />
 					</div>
 					<div class="layer-anchor blue">
 						<span style="color: blue;">⚓</span> X <input class="x"
 							type="number" value="10" /> Z <input class="z" type="number"
-							value="10" /> Y <input class="y" step="0.1" type="number"
+							value="10" /> Y <input class="y" type="number"
 							value="0" />
 					</div>
 				</div>

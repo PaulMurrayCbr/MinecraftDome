@@ -176,8 +176,6 @@ App.prototype.hideShowMask = function() {
 }
 
 App.prototype.shiftall = function(x,z) {
-  console.log("shiftall");
-  
   var nope = false;
   
   var newblocks = new Set();

@@ -179,7 +179,20 @@ BlockDrawer.prototype.LayerInfo.prototype.layerUpdatedYvalues = function() {
 }
 
 BlockDrawer.prototype.LayerInfo.prototype.layerAllUpdated = function() {
+  while(this.group.children.length > 0) {
+    this.group.remove(this.group.children[0]);
+  }
+  this.cubes.clear();
   
+  var c = this;
+  this.layer.blocks.forEach(function(p){
+    var cube = c.drawer.anchorMesh();
+    cube.position.x = p.x;
+    cube.position.z = p.z;
+    cube.position.y = c.layer.getY(p);
+    c.cubes.set(p, cube);
+    c.group.add(cube);
+  });
 }
 
 
