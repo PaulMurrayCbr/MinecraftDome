@@ -4,27 +4,29 @@ console.log("BlockDrawer.js start");
 function BlockDrawer(app, displayController) {
   this.app = app;
   this.drawer = app.displayController;
-  
+    
   this.layerInfo = new Map();
+  
+  this.blocks = new Map();
+  this.blockContainer = new THREE.Group();
+  this.lineContainer = new THREE.Group();
+  
+  
+  // for each surface point, maintain a Vector3 for it
+  this.pointVec = new Map();
+  // all grid lines at x = p.x
+  this.xline = new Map();
+  // all grid lines at z = p.z
+  this.zline = new Map();
+  
 }
+
+
 
 BlockDrawer.prototype.init = function() {
   this.container = this.drawer.offsetter;
-  this.blocks = new Map();
-  this.blockContainer = new THREE.Group();
   this.container.add(this.blockContainer);
-  
-// for (var x = 0; x <= 3; x ++)
-// for (var y = 0; y <= 3; y ++)
-// for (var z = 0; z <= 3; z ++) {
-// var cube = (x+y+z)%2==0 ? this.anchorMesh() : this.blockMesh();
-// cube.position.x = x;
-// cube.position.y = y;
-// cube.position.z = z;
-// this.container.add(cube);
-// }
-
-
+  this.container.add(this.lineContainer);
 }
 
 BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
@@ -37,14 +39,24 @@ BlockDrawer.prototype.blockMaterial = new THREE.MeshLambertMaterial({
 });
 
 BlockDrawer.prototype.anchorMaterial = new THREE.MeshLambertMaterial({
-  //transparent : true,
-  //opacity : .9,
+  // transparent : true,
+  // opacity : .9,
   color : 0xFF4040
 });
+
+BlockDrawer.prototype.gridMaterial = new THREE.LineBasicMaterial({ color: 0xFFFF00, linewidth: 3 });
 
 BlockDrawer.prototype.blockMesh = function() { return new THREE.Mesh(this.blockShape, this.blockMaterial); }
 
 BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.anchorShape, this.anchorMaterial); }
+
+BlockDrawer.prototype.getPointVec = function(p) {
+  if(!this.pointVec.has(p)) {
+    var v = new THREE.Vector3(p.x, 0, p.z);
+    this.pointVec.set(p, v);
+  }
+  return this.pointVec.get(p);  
+}
 
 BlockDrawer.prototype.getSurfaceBlock = function(p) {
   if(!this.blocks.has(p)) {
@@ -57,17 +69,106 @@ BlockDrawer.prototype.getSurfaceBlock = function(p) {
 }
 
 BlockDrawer.prototype.surfaceUpdateAll = function(blocks) {
-  this.container.remove(this.blockContainer);
-  this.blockContainer = new THREE.Group();
-  this.container.add(this.blockContainer);
+  while(this.blockContainer.children.length > 0) {
+    this.blockContainer.remove(this.blockContainer.children[0]);
+  }
+  while(this.lineContainer.children.length > 0) {
+    this.lineContainer.remove(this.lineContainer.children[0]);
+  }
   
   var c = this;
   blocks.forEach(function (p) {
     var block = c.getSurfaceBlock(p);
     block.position.y = c.app.getY(p);
     c.blockContainer.add(block);
+    var v = c.getPointVec(p);
+    v.y = c.app.getY(p);
   });
+  
+  
+  this.xline.clear();
+  this.zline.clear();
+  
+  for(var x = this.app.bounds.min.x; x <= this.app.bounds.max.x; x++) {
+    this.rebuildXline(x);
+  }
+  
+  for(var z = this.app.bounds.min.z; z <= this.app.bounds.max.z; z++) {
+    this.rebuildZline(z);
+  }
+  
+  
+  
   this.drawer.updateCamera();
+}
+
+BlockDrawer.prototype.rebuildXline = function(x) {
+  if(!this.xline.has(x)) {
+    this.xline.set(x, new Set());
+  }
+  var xline = this.xline.get(x);
+  
+  var thegeom = null;
+  
+  for(var z = this.app.bounds.min.z; z <= this.app.bounds.max.z; z++) {
+    var p = up(x,z);
+    if(this.app.blocks.has(p)) {
+      if(!thegeom) {
+        thegeom = new THREE.Geometry();
+      }
+      thegeom.vertices.push(this.getPointVec(p));
+    }
+    else {
+      if(thegeom) {
+        var theline = new THREE.Line(thegeom, this.gridMaterial);
+        xline.add(theline);
+        this.lineContainer.add(theline);
+        thegeom = null;
+      }
+    }
+  }
+  if(thegeom) {
+    var theline = new THREE.Line(thegeom, this.gridMaterial);
+    xline.add(theline);
+    this.lineContainer.add(theline);
+    thegeom = null;
+  }
+  
+}
+
+BlockDrawer.prototype.rebuildZline = function(z) {
+  if(!this.zline.has(z)) {
+    this.zline.set(z, new Set());
+  }
+  var zline = this.zline.get(z);
+  
+  var thegeom = null;
+  
+  for(var x = this.app.bounds.min.x; x <= this.app.bounds.max.x; x++) {
+    var p = up(x,z);
+    if(this.app.blocks.has(p)) {
+      if(!thegeom) {
+        thegeom = new THREE.Geometry();
+      }
+      thegeom.vertices.push(this.getPointVec(p));
+    }
+    else {
+      if(thegeom) {
+        var theline = new THREE.Line(thegeom, this.gridMaterial);
+        zline.add(theline);
+        this.lineContainer.add(theline);
+        thegeom = null;
+      }
+    }
+  }
+  
+  if(thegeom) {
+    var theline = new THREE.Line(thegeom, this.gridMaterial);
+    zline.add(theline);
+    this.lineContainer.add(theline);
+    thegeom = null;
+  }
+  
 }
 
 BlockDrawer.prototype.surfaceUpdate = function(p, added) {
@@ -79,13 +180,35 @@ BlockDrawer.prototype.surfaceUpdate = function(p, added) {
   else {
     this.blockContainer.remove(block);
   }
-    
+
+  if(!this.xline.has(p.x)) {
+    this.xline.set(p.x, new Set());
+  }
+  var xline = this.xline.get(x);
+  
+  if(!this.zline.has(p.z)) {
+    this.zline.set(p.z, new Set());
+  }
+  var zline = this.zline.get(z);
+
+  var c = this;
+  xline.forEach(function(l){c.lineContainer.remove(l);});
+  zline.forEach(function(l){c.lineContainer.remove(l);});
+  xline.clear();
+  zline.clear();
+  this.rebuildXline(p.x);
+  this.rebuildZline(p.z);
+  
   this.drawer.updateCamera();
 }
 
 BlockDrawer.prototype.surfaceUpdateY = function(p) {
   var block = this.getSurfaceBlock(p);
   block.position.y = this.app.getY(p);
+  
+  var v = this.getPointVec(p);
+  p.y = this.app.getY(p);
+  
   this.drawer.repaint();
 }
 
