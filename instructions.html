@@ -12,53 +12,157 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-<h1>Minecraft Dome</h1>
+	<h1>Minecraft Dome</h1>
 
-<p>Before I start, please note that there's no save/restore/undo in this version of MinecraftDome. If it gets slow, hit the 
-	"Calculating …"  button beneath the 3d display window thingy. This will put it into "idle" mode. Press the button again
-	to resume calculating. "Reset" also stops calculations and will also zero the calculated heights. This is handy if things
-	start zipping off into infinity. 
-<p>
+	<p>Before I start, please note that there's no save/restore/undo in
+		this version of MinecraftDome. If it gets slow, hit the "Calculating
+		…" button beneath the 3d display window thingy. This will put it into
+		"idle" mode. Press the button again to resume calculating. "Reset"
+		also stops calculations and will also zero the calculated heights.
+		This is handy if things start zipping off into infinity.
+	<p>
+	<h2>Defining the surface and its supports</h2>
+	<p>Ok. First, use the "surface layer" area to create a surface
+		layer. Just fill in a circle (for a dome) or a rectangle or something.
+		Use your mouse, for God's sake: it's not difficult to figure out. Make
+		sure your surface is all connected. The calculations are done using a
+		square mesh, so by "connected" I mean the squares need to share a face
+		- diagonals don't count.</p>
 
-<p>Ok. First, use the "surface layer" area to create a surface layer. Just fill in a circle (for a dome) or
-a rectangle or something. USe your mouse, it's not difficult to figure out. 
-Make sure your surface is all connected. The calculations are done using a
-square mesh, so by "connected" I mean the squares need to share a face - diagonals don't count.
-</p>
+	<p>Next, create an anchor layer. In that anchor layer, anchor down
+		at least one block of the surface by clicking it. Typically you'd do
+		more than this. For instance, to create a dome you'd anchor down the
+		circumference of your surface. To make an arch, you'd create a longish
+		rectangular surface and anchor down the two ends.</p>
 
-<p>
-Next, create an anchor layer. In that anchor layer, anchor down at least one block of the surface by clicking it. Typically you'd do more than this.
-For instance, to create a dome you'd anchor down the circumference of your surface. To make an arch, you'd create a longish
-rectangular surface and anchor down the two ends.
-</p>
+	<p>You can manipulate the y positions of the anchor blocks by
+		fooling about with the values of the red/green/blue anchors. All
+		anchors in a given layer will be treated as laying on the plane
+		defined by those points. This allows you to - for instance - create a
+		colonade with agiven elevation at each end.</p>
 
-<p>
-You can manipulate the y positions of the anchor blocks by fooling about with the values of the red/green/blue anchors. All anchors
-in a given layer will be treated as laying on the plane defined by those points. This allows you to - for instance - 
-create a colonade with agiven elevation at each end.
-</p>
+	<h2>Fooling about with the dome generation parameters</h2>
 
-<p>Next, have a look at what's in the awesome greenish 3-d window. Your anchor points are red octagons. There's a button that says
-"Idle" or "Calculating". Frob it to turn calculations on/off. There's also a reset button, to kill things and put them back to zero.
-</p>
+	<p>Next, have a look at what's in the awesome greenish 3-d window.
+		Your anchor points are red octahedra. There's a button that says
+		"Idle" or "Calculating". Frob it to turn calculations on/off. There's
+		also a reset button, to kill things and put them back to zero.</p>
 
-<p>The "parabolic" value applies a constant load across the surface and adjusts the surface to bear that load. In consequence,
-the surface will adopt a nice parabolic shape constrained by your anchor points. Larger values give a steeper parabola. This is a 
-suitable shape for a roof bearing rock.</p>
+	<p>There are some buttons to move the view around a bit. Click and
+		hold. If the action gets choppy, turn off the "calculating" thing.
+		Yeah, I could implement some mouse-draggy action, but I didn't. The
+		buttons are all you get.</p>
 
-<p>The "catenary" value applies a load across the surface based on the area of the surface and adjusts the surface to bear that load. In consequence,
-the surface will adopt a catenary shape - the shape of a self-supporting structure. Negative values will create shapes that "hang" from their anchor points
-under thier own weight.
-</p>
-<p>
-The catenary calculations can tend to zip 
-off to infinity, unfortunately, so keep that finger over the "reset" button.  </p>
+	<p>The "parabolic" value applies a constant load across the surface
+		and adjusts the surface to bear that load. In consequence, the surface
+		will adopt a nice parabolic shape constrained by your anchor points.
+		Larger values give a steeper parabola. This is a suitable shape for a
+		roof bearing rock.</p>
 
-<p>If both values are zero, then you'll get a soap-bubble effect. I think what happens is that the engine computes a minimal
-surface. Of course, if all your anchor points are in one layer and therefore coplanar, you'll wind up with something flat.</p>
+	<p>The "catenary" value applies a load across the surface based on
+		the area of the surface and adjusts the surface to bear that load. In
+		consequence, the surface will adopt a catenary shape - the shape of a
+		self-supporting structure. Negative values will create shapes that
+		"hang" from their anchor points under thier own weight.</p>
 
-<p>TODO: add a "roof" calculation, where the load is proportional to height below a roof. I belive this will also give catenary shapes, but in a more constrained way.</p>
-<p>TODO: Add a "constant volume" option. I suspect this will create spheres and psudeospheres. The calculation will be a shade tricky.</p>
+	<p>The catenary calculations can tend to zip off to infinity,
+		unfortunately, so keep that mouse over the "reset" button.</p>
+
+	<p>If both values are zero, then you'll get a soap-bubble effect. I
+		think what happens is that the engine computes a minimal surface. Of
+		course, if all your anchor points are in one layer and therefore
+		coplanar, you'll wind up with something flat.</p>
+
+
+	<p>
+		You would nomally use this app to generate the <em>roof</em> of a
+		structure. That is, the floor of your awesome house will probably be
+		two or three blocks below your defined anchor points, with nice quartz
+		columns where those anchor points are. So keep that in mind when
+		judging whether or not the shape looks too flat or too high.
+	</p>
+
+	<ul>
+		<li>TODO: add a "roof" calculation, where the load is
+			proportional to height below a roof. I belive this will also give
+			catenary shapes, but in a more constrained way.</li>
+
+		<li>TODO: Add a "constant volume" option. I suspect this will
+			create spheres and psudeospheres. The calculation will be a shade
+			tricky.</li>
+	</ul>
+
+	<h2>Generating some stuff you can print out and use as a plan for
+		building the actual shape in-game</h2>
+
+	<p>There are some display options. The "Ideal blocks" checkbox
+		turns on some semitransparent cubes centered at exactly the computed
+		grid points. The "lines" checkbox turns on a yellow grid.</p>
+	<p>But you are interested in the "minecraft" checkbox. Turn it on
+		to see cubes placed in columns defining the shape. "Use half slabs"
+		uses half slabs. "Join faces" means that adjacent cubes must connect
+		on a face, as opposed to it being ok to connect on a diagonal.</p>
+
+	<p>When you have the shape you want, or something vaguely like what
+		you want, hit the "generate plans" button. This will produce a set of
+		plans in fixed-width plain text that you can copy/paste or print. The
+		text has a tasteful chequerbord background colour in 16*8*16 cubes.
+		Use the "chunk boundary offset" controls to move the starting point of
+		this chequerborad around. Turn on the chunk boundary thingy in game
+		(F3-something, I think) and use it to line up where to place your
+		blocks.</p>
+
+	<table>
+		<tr>
+			<td><tt>·</tt></td>
+			<td>Empty space</td>
+		</tr>
+		<tr>
+			<td><tt>A</tt></td>
+			<td>Anchor block</td>
+		</tr>
+		<tr>
+			<td><tt>●</tt></td>
+			<td>An empty space that has a block above it. Great place for a
+				torch!</td>
+		</tr>
+		<tr>
+			<td><tt>#</tt></td>
+			<td>A full block</td>
+		</tr>
+		<tr>
+			<td><tt>U</tt></td>
+			<td>Upper half-slab</td>
+		</tr>
+		<tr>
+			<td><tt>L</tt></td>
+			<td>Lower half-slab</td>
+		</tr>
+		<tr>
+			<td><tt>○</tt></td>
+			<td>An empty space that has a block below it. Can help you line
+				things up, and also a fine place for a torch.</td>
+		</tr>
+	</table>
+
+	<h2>Sending me some money</h2>
+
+	<p>
+		If you use and enjoy this tool, or even if you just use it, consider
+		dropping a buck or two into my paypal <b>pmurray@bigpond.com</b>. Two
+		bucks will be fine. Why not drop in even more if you want to use this
+		tool a lot? You know, if you drop ten or twenty bucks into my paypal,
+		you could use this thing for years and years before being overcome
+		with wracking pangs of guilt!
+	</p>
+	<p>
+		If you wish to email me about this, you can send it to that address <b>pmurray@bigpond.com</b>.
+		However, I get a metric tonne of spam. Please put "MinecraftDome" in
+		the subject. If you put a space in there, then obviously you have
+		reading comprehension problems and I will ignore your mail because
+		life is too short as it is.
+	</p>
+	<p>Just letting you know.</p>
 
 </body>
 </html>
