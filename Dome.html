@@ -123,6 +123,16 @@
 			Catenary (self-supporting) load <input type="number" value="0"
 				onchange="ctl(this).catenary = parseFloat($(this).val());" />
 		</div>
+		<div>
+			Show Ideal Blocks <input type="checkbox" checked="true" onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))"/>
+			Show Lines <input type="checkbox" checked="true" onchange="ctl(this).showLinesChecked($(this).prop('checked'))"/>
+		</div>
+		
+		<div>
+			Show Minecraft Blocks <input type="checkbox" onchange="ctl(this).showMinecraftBlocksChecked($(this).prop('checked'))"/>
+			Use half-slabs <input type="checkbox" onchange="ctl(this).useHalfSlabsChecked($(this).prop('checked'))"/>
+			Join faces <input type="checkbox" onchange="ctl(this).joinFacesChecked($(this).prop('checked'))"/>
+		</div>
 	</div>
 </body>
 </html>

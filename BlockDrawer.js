@@ -30,6 +30,13 @@ BlockDrawer.prototype.init = function() {
 }
 
 BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
+
+BlockDrawer.prototype.uSlabShape = new THREE.BoxGeometry(7/8, 7/16, 7/8);
+BlockDrawer.prototype.uSlabShape.translate(0,7/32,0); // line up the top surface
+
+BlockDrawer.prototype.lSlabShape = new THREE.BoxGeometry(7/8, 7/16, 7/8);
+BlockDrawer.prototype.lSlabShape.translate(0,-7/32,0); // line up the bottom surface
+
 BlockDrawer.prototype.anchorShape = new THREE.OctahedronGeometry(7/8/2);
 
 BlockDrawer.prototype.blockMaterial = new THREE.MeshLambertMaterial({
@@ -211,6 +218,38 @@ BlockDrawer.prototype.surfaceUpdateY = function(p) {
   
   this.drawer.repaint();
 }
+
+
+BlockDrawer.prototype.useHalfSlabs = function(v) {
+}
+
+BlockDrawer.prototype.joinFaces = function(v) {
+}
+
+BlockDrawer.prototype.showIdealBlocks = function(v) {
+  if(v) {
+    this.container.add(this.blockContainer);
+  }
+  else {
+    this.container.remove(this.blockContainer);
+  }
+  this.drawer.repaint();
+}
+
+BlockDrawer.prototype.showLines = function(v) {
+  if(v) {
+    this.container.add(this.lineContainer);
+  }
+  else {
+    this.container.remove(this.lineContainer);
+  }
+  this.drawer.repaint();
+  
+}
+
+BlockDrawer.prototype.showMinecraftBlocks = function(v) {
+}
+
 
 BlockDrawer.prototype.layerBlockUpdate = function(layer, p, added) {
   if(!this.layerInfo.has(layer)) this.layerInfo.set(layer, new this.LayerInfo(this, layer));

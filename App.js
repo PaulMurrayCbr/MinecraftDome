@@ -282,6 +282,26 @@ App.prototype.layerAllUpdated = function(layer) {
   this.drawer.layerAllUpdated(layer);
 }
 
+App.prototype.useHalfSlabsChecked = function(v) {
+  this.drawer.useHalfSlabs(v);
+}
+
+App.prototype.joinFacesChecked = function(v) {
+  this.drawer.joinFaces(v);
+}
+
+App.prototype.showIdealBlocksChecked = function(v) {
+  this.drawer.showIdealBlocks(v);
+}
+
+App.prototype.showLinesChecked = function(v) {
+  this.drawer.showLines(v);
+}
+
+App.prototype.showMinecraftBlocksChecked = function(v) {
+  this.drawer.showMinecraftBlocks(v);
+}
+
 ////////////////////////////////////////////////////////
 // These functions are the actual math.
 
