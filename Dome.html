@@ -114,5 +114,15 @@
 		<span id="display-minus" class="spanbutton">-</span>
 		</div>
 	</div>
+	<div class="parameters-div">
+		<span class="spanbutton calculating" onclick="ctl(this).clickCalculate()">Calculating…</span>
+		<span class="spanbutton" onclick="ctl(this).clickReset()">Reset</span>
+		<div>
+			Parabolic (load-bearing) load <input type="number" value="0" step=".1" onchange="ctl(this).parabolic = parseFloat($(this).val());"/>
+		</div>
+		<div>
+			Catenary (self-supporting) load <input type="number" value="0" step=".1" onchange="ctl(this).catenary = parseFloat($(this).val());"/>
+		</div>
+	</div>
 </body>
 </html>

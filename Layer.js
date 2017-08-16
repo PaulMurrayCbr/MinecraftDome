@@ -192,8 +192,8 @@ Layer.prototype.shiftall = function(x, z) {
 Layer.prototype.redrawCanvas = function(x, z) {
   canvasRedraw(this, x, z);
 
-  // trigger a redraw of the surface mask
-  this.app.redrawCanvas(x, z);
+//  // trigger a redraw of the surface mask
+//  this.app.redrawCanvas(x, z);
   
   var c = this;
   var canvas = c.canvas;
@@ -207,6 +207,30 @@ Layer.prototype.redrawCanvas = function(x, z) {
   for(var i in this.anchor ) {
     ctx.fillStyle = i;
     ctx.fillText("⚓",(this.anchor[i].x+.5)*c.canvasScale+.5,(this.anchor[i].z+.5)*c.canvasScale+.5);
+  }
+  
+  ctx.lineWidth = 1;
+  ctx.strokeStyle= "#A0A0FF";
+  
+  if(x==undefined || z == undefined) {
+    this.app.blocks.forEach(function(p) {
+      ctx.beginPath();
+      ctx.moveTo(p.x * c.canvasScale + 1, p.z * c.canvasScale + 1);
+      ctx.lineTo((p.x + 1) * c.canvasScale - 2, (p.z + 1) * c.canvasScale - 2);
+      ctx.moveTo(p.x * c.canvasScale + 1, (p.z + 1) * c.canvasScale - 2);
+      ctx.lineTo((p.x + 1) * c.canvasScale - 2, p.z * c.canvasScale + 1);
+      ctx.stroke();
+    });
+  }
+  else {
+    if(this.app.blocks.has(up(x,z))) {
+      ctx.beginPath();
+      ctx.moveTo(x * c.canvasScale + 1, z * c.canvasScale + 1);
+      ctx.lineTo((x + 1) * c.canvasScale - 2, (z + 1) * c.canvasScale - 2);
+      ctx.moveTo(x * c.canvasScale + 1, (z + 1) * c.canvasScale - 2);
+      ctx.lineTo((x + 1) * c.canvasScale - 2, z * c.canvasScale + 1);
+      ctx.stroke();
+    }
   }
 }
 

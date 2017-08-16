@@ -4,6 +4,7 @@ function App(element) {
   this.element = element;
   this.maskHidden = false;
   this.blocks = new Set();
+  this.calculatedY = new Map();
   
   this.bounds = {
       min : {        x : 0,        y : 0,        z : 0      },
@@ -18,6 +19,10 @@ function App(element) {
   this.displayController = displayDiv.controller;
   this.drawer = new BlockDrawer(this, this.displayController);
   
+  this.isCalculating = true;
+  this.parabolic = 0;
+  this.catenary = 0;
+  this.lastUpdate = new Date();
 }
 
 App.prototype.init = function() {
@@ -53,6 +58,8 @@ App.prototype.init = function() {
   
   this.redrawCanvas();
   this.recalculateBounds();
+  
+  this.calculate();
 }
 
 App.prototype.recalculateBounds = function() {
@@ -108,7 +115,12 @@ App.prototype.recalculateBounds = function() {
 }
 
 App.prototype.getY = function(p) {
-  return 0;
+  if(this.calculatedY.has(p)) {
+    return this.calculatedY.get(p);
+  }
+  else { 
+    return 0;
+  }
 }
 
 App.prototype.redrawCanvas = function(x, z) {
@@ -126,9 +138,7 @@ App.prototype.redrawCanvas = function(x, z) {
           if (l.enabled && l.blocks.has(p)) {
             ctx.beginPath();
             ctx.moveTo(x * c.canvasScale + 1, z * c.canvasScale + 1);
-            ctx
-                .lineTo((x + 1) * c.canvasScale - 2, (z + 1) * c.canvasScale
-                    - 2);
+            ctx.lineTo((x + 1) * c.canvasScale - 2, (z + 1) * c.canvasScale - 2);
             ctx.moveTo(x * c.canvasScale + 1, (z + 1) * c.canvasScale - 2);
             ctx.lineTo((x + 1) * c.canvasScale - 2, z * c.canvasScale + 1);
             ctx.stroke();
@@ -194,37 +204,61 @@ App.prototype.shiftall = function(x,z) {
   
   this.blocks = newblocks;
   
-  this.redrawCanvas();
-  this.updateAllMask();
+  this.surfaceUpdateAll();
+}
+
+// callback from canvas
+App.prototype.blockUpdate = function(p, added) {
+  this.surfaceUpdate(p, added);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // these functions have the job of adjusting the contents of the Drawer
 // by manipulating the contents of the THREE.GRoup this.displayController.offsetter
 
-App.prototype.updateAllMask = function() {
+App.prototype.surfaceUpdateAll = function() {
   this.recalculateBounds();
-  this.drawer.updateAllMask(this.blocks);
+  this.redrawCanvas();
+  this.drawer.surfaceUpdateAll(this.blocks);
+  
+  Layer.prototype.allLayers.forEach(function(l) {
+    l.redrawCanvas();
+  });
+  
 }
 
-App.prototype.blockUpdate = function(p, added) {
+App.prototype.surfaceUpdate = function(p, added) {
   this.recalculateBounds();
-  this.drawer.blockUpdate(p, added);
+  this.redrawCanvas(p.x, p.z);
+  this.drawer.surfaceUpdate(p, added);
+  Layer.prototype.allLayers.forEach(function(l) {
+    l.redrawCanvas(p);
+  });
+}
+
+App.prototype.surfaceUpdateY = function(p) {
+  this.recalculateBounds();
+  this.drawer.surfaceUpdateY(p);
 }
 
 App.prototype.layerBlockUpdate = function(layer, p, added) {
+  console.log("layerBlockUpdate: " + p);
+  this.redrawCanvas(p.x, p.z);
   this.drawer.layerBlockUpdate(layer, p, added); 
 }
 
 App.prototype.layerAdded = function(layer) {
+  this.redrawCanvas();
   this.drawer.layerAdded(layer);
 }
 
 App.prototype.layerRemoved = function(layer) {
+  this.redrawCanvas();
   this.drawer.layerRemoved(layer);
 }
 
 App.prototype.layerEnabled = function(layer, enabled) {
+  this.redrawCanvas();
   this.drawer.layerEnabled(layer, enabled);
 }
 
@@ -233,7 +267,94 @@ App.prototype.layerUpdatedYvalues = function(layer) {
 }
 
 App.prototype.layerAllUpdated = function(layer) {
+  this.redrawCanvas();
   this.drawer.layerAllUpdated(layer);
 }
+
+////////////////////////////////////////////////////////
+// These functions are the actual math.
+
+App.prototype.clickCalculate = function() {
+  if(this.isCalculating) {
+    this.isCalculating = false;
+    $(this.element).find(".parameters-div .calculating").text("Idle");
+  }
+  else {
+    this.isCalculating = true;
+    $(this.element).find(".parameters-div .calculating").text("Calculating …");
+    this.calculate();
+  }
+  this.surfaceUpdateAll();
+  this.lastUpdate = new Date();
+}
+
+App.prototype.clickReset = function() {
+  this.isCalculating = false;
+  $(this.element).find(".parameters-div .calculating").text("Idle");
+  this.calculatedY.clear();
+  this.surfaceUpdateAll();
+  this.lastUpdate = new Date();
+}
+
+App.prototype.calculate = function() {
+  if(!this.isCalculating) return;
+  
+  console.log("calculating");
+  
+  var c = this;
+  this.blocks.forEach(function(p) {
+    c.calculateOne(p);
+  });
+
+  if(new Date().getTime() - this.lastUpdate.getTime() > 250) {
+    this.surfaceUpdateAll();
+    this.lastUpdate = new Date();
+  }
+  
+  window.setTimeout($.proxy(this.calculate, this));
+}
+
+App.prototype.calculateOne = function(p) {
+  var c = this;
+  var supporting = false;
+  Layer.prototype.allLayers.forEach(function(l) {
+    if (l.enabled && l.blocks.has(p)) {
+      c.calculatedY.set(p, l.getY(p));
+      supporting = true;
+      return;
+    }
+  });
+  if(supporting) return;
+  
+  var currentY = this.getY(p);
+  var neighbours = 0;
+  
+  var avgY = 0;
+  if(this.blocks.has(up(p.x, p.z-1))) {
+    avgY += this.getY(up(p.x, p.z-1));
+    neighbours ++;
+  }
+  if(this.blocks.has(up(p.x, p.z+1))) {
+    avgY += this.getY(up(p.x, p.z+1));
+    neighbours ++;
+  }
+  if(this.blocks.has(up(p.x-1, p.z))) {
+    avgY += this.getY(up(p.x-1, p.z));
+    neighbours ++;
+  }
+  if(this.blocks.has(up(p.x+1, p.z))) {
+    avgY += this.getY(up(p.x+1, p.z));
+    neighbours ++;
+  }
+  
+  if(!neighbours) return;
+  
+  avgY /= neighbours;
+  
+  var targetY = avgY + this.parabolic;
+  
+  this.calculatedY.set(p, targetY);
+}
+
 
 console.log("App.js ok");

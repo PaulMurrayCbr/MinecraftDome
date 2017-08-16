@@ -46,47 +46,47 @@ BlockDrawer.prototype.blockMesh = function() { return new THREE.Mesh(this.blockS
 
 BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.anchorShape, this.anchorMaterial); }
 
-BlockDrawer.prototype.updateAllMask = function(blocks) {
+BlockDrawer.prototype.getSurfaceBlock = function(p) {
+  if(!this.blocks.has(p)) {
+    var block =  this.blockMesh();
+    this.blocks.set(p, block);
+    block.position.x = p.x;
+    block.position.z = p.z;
+  }
+  return this.blocks.get(p);  
+}
+
+BlockDrawer.prototype.surfaceUpdateAll = function(blocks) {
   this.container.remove(this.blockContainer);
   this.blockContainer = new THREE.Group();
   this.container.add(this.blockContainer);
   
   var c = this;
   blocks.forEach(function (p) {
-    if(!c.blocks.has(p)) {
-      var block =  c.blockMesh();
-      c.blocks.set(p, block);
-      block.position.x = p.x;
-      block.position.z = p.z;
-    }
-    var block = c.blocks.get(p);
+    var block = c.getSurfaceBlock(p);
     block.position.y = c.app.getY(p);
     c.blockContainer.add(block);
-    
   });
   this.drawer.updateCamera();
 }
 
-BlockDrawer.prototype.blockUpdate = function(p, added) {
-	if(added) {
-		if(!this.blocks.has(p)) {
-			var block =  this.blockMesh();
-			this.blocks.set(p, block);
-			block.position.x = p.x;
-			block.position.z = p.z;
-		}
-		var block = this.blocks.get(p);
-		block.position.y = this.app.getY(p);
-		this.blockContainer.add(block);
-	}
-	else {
-		if(this.blocks.has(p)) {
-			this.blockContainer.remove(this.blocks.get(p));
-		}
-		
-	}
-	
+BlockDrawer.prototype.surfaceUpdate = function(p, added) {
+  var block = this.getSurfaceBlock(p);
+  if(added) {
+    block.position.y = this.app.getY(p);
+    this.blockContainer.add(block);
+  }
+  else {
+    this.blockContainer.remove(block);
+  }
+    
   this.drawer.updateCamera();
+}
+
+BlockDrawer.prototype.surfaceUpdateY = function(p) {
+  var block = this.getSurfaceBlock(p);
+  block.position.y = this.app.getY(p);
+  this.drawer.repaint();
 }
 
 BlockDrawer.prototype.layerBlockUpdate = function(layer, p, added) {
