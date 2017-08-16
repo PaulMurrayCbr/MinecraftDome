@@ -10,7 +10,7 @@ function BlockDrawer(app, displayController) {
   this.blocks = new Map();
   this.blockContainer = new THREE.Group();
   this.lineContainer = new THREE.Group();
-  
+  this.mcContainer = new THREE.Group();
   
   // for each surface point, maintain a Vector3 for it
   this.pointVec = new Map();
@@ -18,6 +18,12 @@ function BlockDrawer(app, displayController) {
   this.xline = new Map();
   // all grid lines at z = p.z
   this.zline = new Map();
+  
+  this.mcColumns = new Map();
+  
+  this.isUseHalfSlabs = false;
+  this.isJoinFaces = false;
+  
   
 }
 
@@ -27,6 +33,18 @@ BlockDrawer.prototype.init = function() {
   this.container = this.drawer.offsetter;
   this.container.add(this.blockContainer);
   this.container.add(this.lineContainer);
+}
+
+BlockDrawer.prototype.reset = function() {
+  this.blocks.clear();
+  this.pointVec.clear();
+  this.xline.clear();
+  this.zline.clear();
+  //this.mcColumns.clear();
+  
+  while(this.blockContainer.children.length >0) this.blockContainer.remove(this.blockContainer.children[0]);
+  while(this.lineContainer.children.length >0) this.lineContainer.remove(this.lineContainer.children[0]);
+  //while(this.mcContainer.children.length >0) this.mcContainer.remove(this.mcContainer.children[0]);
 }
 
 BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
@@ -45,6 +63,12 @@ BlockDrawer.prototype.blockMaterial = new THREE.MeshLambertMaterial({
   color : 0xD0D0F0// 0x80A0C0 //0x2194ce
 });
 
+BlockDrawer.prototype.mcMaterial = new THREE.MeshLambertMaterial({
+  transparent : true,
+  opacity : .8,
+  color : 0xD0F0D0// 0x80A0C0 //0x2194ce
+});
+
 BlockDrawer.prototype.anchorMaterial = new THREE.MeshLambertMaterial({
   // transparent : true,
   // opacity : .9,
@@ -57,12 +81,27 @@ BlockDrawer.prototype.blockMesh = function() { return new THREE.Mesh(this.blockS
 
 BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.anchorShape, this.anchorMaterial); }
 
+BlockDrawer.prototype.mcBlockMesh = function() { return new THREE.Mesh(this.blockShape, this.mcMaterial); }
+BlockDrawer.prototype.mcUHSMesh = function() { return new THREE.Mesh(this.uSlabShape, this.mcMaterial); }
+BlockDrawer.prototype.mcLHSMesh = function() { return new THREE.Mesh(this.lSlabShape, this.mcMaterial); }
+
+
 BlockDrawer.prototype.getPointVec = function(p) {
   if(!this.pointVec.has(p)) {
     var v = new THREE.Vector3(p.x, 0, p.z);
     this.pointVec.set(p, v);
   }
   return this.pointVec.get(p);  
+}
+
+BlockDrawer.prototype.getMcColumn = function(p) {
+  if(!this.mcColumns.has(p)) {
+    var g = new THREE.Group();
+    g.position.x = p.x;
+    g.position.z = p.z;
+    this.mcColumns.set(p, g);
+  }
+  return this.mcColumns.get(p);  
 }
 
 BlockDrawer.prototype.getSurfaceBlock = function(p) {
@@ -84,12 +123,16 @@ BlockDrawer.prototype.surfaceUpdateAll = function(blocks) {
   }
   
   var c = this;
-  blocks.forEach(function (p) {
+  this.app.blocks.forEach(function (p) {
     var block = c.getSurfaceBlock(p);
     block.position.y = c.app.getY(p);
     c.blockContainer.add(block);
     var v = c.getPointVec(p);
     v.y = c.app.getY(p);
+    
+    c.rebuildMcColumn(p);
+    
+    
   });
   
   
@@ -178,13 +221,78 @@ BlockDrawer.prototype.rebuildZline = function(z) {
   
 }
 
+BlockDrawer.prototype.rebuildMcColumn = function(p) {
+  var col = this.getMcColumn(p);
+  while(col.children.length > 0) {
+    col.remove(col.children[0]);
+  }
+  
+  if(!this.app.blocks.has(p)) {
+    this.mcContainer.remove(col);
+    return;
+  }
+  
+  this.mcContainer.add(col);
+  
+  var thisY = this.app.getY(p);
+  var maxY = thisY;
+  var minY = thisY;
+  
+  if(this.app.blocks.has(up(p.x+1,p.z))) {
+    var y = (this.app.getY(up(p.x+1,p.z)) + thisY) /2;
+    maxY = Math.max(maxY, y);
+    minY = Math.min(minY, y);
+  }
+  if(this.app.blocks.has(up(p.x-1,p.z))) {
+    var y = (this.app.getY(up(p.x-1,p.z)) + thisY) /2;
+    maxY = Math.max(maxY, y);
+    minY = Math.min(minY, y);
+  }
+  if(this.app.blocks.has(up(p.x,p.z+1))) {
+    var y = (this.app.getY(up(p.x,p.z+1)) + thisY) /2;
+    maxY = Math.max(maxY, y);
+    minY = Math.min(minY, y);
+  }
+  if(this.app.blocks.has(up(p.x,p.z-1))) {
+    var y = (this.app.getY(up(p.x,p.z-1)) + thisY) /2;
+    maxY = Math.max(maxY, y);
+    minY = Math.min(minY, y);
+  }
+  
+  var floorY;
+  var ceilY;
+  
+  if(this.isJoinFaces) {
+    floorY = Math.round(minY);
+    ceilY = Math.round(maxY);
+  }
+  else {
+    floorY = Math.round(minY+.499);
+    ceilY = Math.round(maxY-.499);
+  }
+
+  floorY = Math.min(floorY, Math.round(thisY));
+  ceilY = Math.max(ceilY, Math.round(thisY));
+  
+  for(y=floorY; y<=ceilY; y++) {
+    var m = this.mcBlockMesh();
+    m.position.y = y;
+    col.add(m);
+  }
+  
+  
+}
+
 BlockDrawer.prototype.surfaceUpdate = function(p, added) {
   var block = this.getSurfaceBlock(p);
   if(added) {
     block.position.y = this.app.getY(p);
     this.blockContainer.add(block);
+    this.mcContainer.add(this.getMcColumn(p));
+    this.rebuildMcColumn(p);
   }
   else {
+    this.mcContainer.remove(this.getMcColumn(p));
     this.blockContainer.remove(block);
   }
 
@@ -221,9 +329,13 @@ BlockDrawer.prototype.surfaceUpdateY = function(p) {
 
 
 BlockDrawer.prototype.useHalfSlabs = function(v) {
+    this.isUseHalfSlabs = v;
+    this.surfaceUpdateAll();
 }
 
 BlockDrawer.prototype.joinFaces = function(v) {
+  this.isJoinFaces = v;
+  this.surfaceUpdateAll();
 }
 
 BlockDrawer.prototype.showIdealBlocks = function(v) {
@@ -248,6 +360,13 @@ BlockDrawer.prototype.showLines = function(v) {
 }
 
 BlockDrawer.prototype.showMinecraftBlocks = function(v) {
+  if(v) {
+    this.container.add(this.mcContainer);
+  }
+  else {
+    this.container.remove(this.mcContainer);
+  }
+  this.drawer.repaint();
 }
 
 

@@ -323,6 +323,7 @@ App.prototype.clickReset = function() {
   this.isCalculating = false;
   $(this.element).find(".parameters-div .calculating").text("Idle");
   this.calculatedY.clear();
+  this.drawer.reset();
   this.surfaceUpdateAll();
   this.lastUpdate = new Date();
 }
