@@ -189,6 +189,18 @@ Layer.prototype.shiftall = function(x, z) {
   this.app.layerAllUpdated(this);  
 }
 
+Layer.prototype.biggerClick = function() {
+  this.canvasScale ++;
+  this.redrawCanvas();
+}
+
+Layer.prototype.smallerClick = function() {
+  if(this.canvasScale > 4) {
+    this.canvasScale --;
+    this.redrawCanvas();
+  }
+}
+
 Layer.prototype.redrawCanvas = function(x, z) {
   canvasRedraw(this, x, z);
 

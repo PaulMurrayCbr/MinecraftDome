@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+<title>Minecraft Dome</title>
+
+<link rel="stylesheet" href="Dome.css">
+
+<link rel="stylesheet" href="lib/themes/base/all.css">
+
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<h1>Minecraft Dome</h1>
+
+<p>Before I start, please note that there's no save/restore/undo in this version of MinecraftDome. If it gets slow, hit the 
+	"Calculating …"  button beneath the 3d display window thingy. This will put it into "idle" mode. Press the button again
+	to resume calculating. "Reset" also stops calculations and will also zero the calculated heights. This is handy if things
+	start zipping off into infinity. 
+<p>
+
+<p>Ok. First, use the "surface layer" area to create a surface layer. Just fill in a circle (for a dome) or
+a rectangle or something. USe your mouse, it's not difficult to figure out. 
+Make sure your surface is all connected. The calculations are done using a
+square mesh, so by "connected" I mean the squares need to share a face - diagonals don't count.
+</p>
+
+<p>
+Next, create an anchor layer. In that anchor layer, anchor down at least one block of the surface by clicking it. Typically you'd do more than this.
+For instance, to create a dome you'd anchor down the circumference of your surface. To make an arch, you'd create a longish
+rectangular surface and anchor down the two ends.
+</p>
+
+<p>
+You can manipulate the y positions of the anchor blocks by fooling about with the values of the red/green/blue anchors. All anchors
+in a given layer will be treated as laying on the plane defined by those points. This allows you to - for instance - 
+create a colonade with agiven elevation at each end.
+</p>
+
+<p>Next, have a look at what's in the awesome greenish 3-d window. Your anchor points are red octagons. There's a button that says
+"Idle" or "Calculating". Frob it to turn calculations on/off. There's also a reset button, to kill things and put them back to zero.
+</p>
+
+<p>The "parabolic" value applies a constant load across the surface and adjusts the surface to bear that load. In consequence,
+the surface will adopt a nice parabolic shape constrained by your anchor points. Larger values give a steeper parabola. This is a 
+suitable shape for a roof bearing rock.</p>
+
+<p>The "catenary" value applies a load across the surface based on the area of the surface and adjusts the surface to bear that load. In consequence,
+the surface will adopt a catenary shape - the shape of a self-supporting structure. Negative values will create shapes that "hang" from their anchor points
+under thier own weight.
+</p>
+<p>
+The catenary calculations can tend to zip 
+off to infinity, unfortunately, so keep that finger over the "reset" button.  </p>
+
+<p>If both values are zero, then you'll get a soap-bubble effect. I think what happens is that the engine computes a minimal
+surface. Of course, if all your anchor points are in one layer and therefore coplanar, you'll wind up with something flat.</p>
+
+<p>TODO: add a "roof" calculation, where the load is proportional to height below a roof. I belive this will also give catenary shapes, but in a more constrained way.</p>
+<p>TODO: Add a "constant volume" option. I suspect this will create spheres and psudeospheres. The calculation will be a shade tricky.</p>
+
+</body>
+</html>

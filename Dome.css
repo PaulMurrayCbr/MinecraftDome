@@ -2,7 +2,7 @@
 #layers { border: thin solid darkgray; padding: 2px;}
 .layer { border: thin solid darkgray; margin: 2px 0; }
 .template { background: red; display: none; }
-.spanbutton { border: thin solid darkgray; cursor: pointer;}
+.spanbutton { border: 2px outset darkgray; cursor: pointer; margin: 2px; padding: 2px;}
 .spanbutton :hover { background: blue; color: white; }
 .layer > .delete { background: red; color: white; }
 

@@ -207,6 +207,18 @@ App.prototype.shiftall = function(x,z) {
   this.surfaceUpdateAll();
 }
 
+App.prototype.biggerClick = function() {
+  this.canvasScale ++;
+  this.redrawCanvas();
+}
+
+App.prototype.smallerClick = function() {
+  if(this.canvasScale > 4) {
+    this.canvasScale --;
+    this.redrawCanvas();
+  }
+}
+
 // callback from canvas
 App.prototype.blockUpdate = function(p, added) {
   this.surfaceUpdate(p, added);
@@ -242,7 +254,6 @@ App.prototype.surfaceUpdateY = function(p) {
 }
 
 App.prototype.layerBlockUpdate = function(layer, p, added) {
-  console.log("layerBlockUpdate: " + p);
   this.redrawCanvas(p.x, p.z);
   this.drawer.layerBlockUpdate(layer, p, added); 
 }
@@ -299,8 +310,6 @@ App.prototype.clickReset = function() {
 App.prototype.calculate = function() {
   if(!this.isCalculating) return;
   
-  console.log("calculating");
-  
   var c = this;
   this.blocks.forEach(function(p) {
     c.calculateOne(p);
@@ -328,22 +337,27 @@ App.prototype.calculateOne = function(p) {
   
   var currentY = this.getY(p);
   var neighbours = 0;
+  var d;
   
   var avgY = 0;
   if(this.blocks.has(up(p.x, p.z-1))) {
-    avgY += this.getY(up(p.x, p.z-1));
+    d = this.getY(up(p.x, p.z-1));
+    avgY += d;
     neighbours ++;
   }
   if(this.blocks.has(up(p.x, p.z+1))) {
-    avgY += this.getY(up(p.x, p.z+1));
+    d = this.getY(up(p.x, p.z+1));
+    avgY += d;
     neighbours ++;
   }
   if(this.blocks.has(up(p.x-1, p.z))) {
-    avgY += this.getY(up(p.x-1, p.z));
+    d = this.getY(up(p.x-1, p.z));
+    avgY += d;
     neighbours ++;
   }
   if(this.blocks.has(up(p.x+1, p.z))) {
-    avgY += this.getY(up(p.x+1, p.z));
+    d = this.getY(up(p.x+1, p.z));
+    avgY += d;
     neighbours ++;
   }
   
@@ -351,7 +365,38 @@ App.prototype.calculateOne = function(p) {
   
   avgY /= neighbours;
   
-  var targetY = avgY + this.parabolic;
+  var weight = 0;
+  
+  if(this.catenary != 0) {
+    // this is actually not quite right - we can't use avgY, we should use p.y. But
+    // this creates infinities. avgY is ok in the limit of large surfaces with small
+    // curvature.
+    
+    var xpz = new THREE.Vector3( 1, this.getY(up(p.x+1, p.z  ))-avgY,  0);
+    var xmz = new THREE.Vector3(-1, this.getY(up(p.x-1, p.z  ))-avgY,  0);
+    var xzp = new THREE.Vector3( 0, this.getY(up(p.x  , p.z+1))-avgY,  1);
+    var xzm = new THREE.Vector3( 0, this.getY(up(p.x  , p.z-1))-avgY, -1);
+    var cross = new THREE.Vector3();
+    
+    if(this.blocks.has(up(p.x, p.z-1)) && this.blocks.has(up(p.x-1, p.z))) {
+      cross.crossVectors(xzm, xmz);
+      weight += 1/2 * cross.lengthSq();
+    }
+    if(this.blocks.has(up(p.x, p.z+1)) && this.blocks.has(up(p.x-1, p.z))) {
+      cross.crossVectors(xzp, xmz);
+      weight += 1/2 * cross.lengthSq();
+    }
+    if(this.blocks.has(up(p.x, p.z-1)) && this.blocks.has(up(p.x+1, p.z))) {
+      cross.crossVectors(xzm, xpz);
+      weight += 1/2 * cross.lengthSq();
+    }
+    if(this.blocks.has(up(p.x, p.z+1)) && this.blocks.has(up(p.x+1, p.z))) {
+      cross.crossVectors(xzp, xpz);
+      weight += 1/2 * cross.lengthSq();
+    }
+  }
+  
+  var targetY = avgY + this.parabolic / 50 +  this.catenary * weight / 500;
   
   this.calculatedY.set(p, targetY);
 }
