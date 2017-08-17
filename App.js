@@ -29,6 +29,8 @@ function App(element) {
   this.isCalculating = true;
   this.parabolic = 0;
   this.catenary = 0;
+  this.roofY = 0;
+  this.roofLoad = 0;
   this.lastUpdate = new Date();
 }
 
@@ -424,7 +426,7 @@ App.prototype.calculateOne = function(p) {
     }
   }
   
-  var targetY = avgY + this.parabolic / 50 +  this.catenary * weight / 500;
+  var targetY = avgY + this.parabolic / 50 +  this.catenary * weight / 250 + (this.roofY-avgY) * this.roofLoad/200;
   
   this.calculatedY.set(p, targetY);
 }

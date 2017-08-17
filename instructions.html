@@ -18,7 +18,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-	<div id="main">
+	<div id="main" style="margin-left: 1em;">
 		<h1>Minecraft Dome</h1>
 
 		<p>Before I start, please note that there's no save/restore/undo
@@ -61,27 +61,6 @@
 			Yeah, I could implement some mouse-draggy action, but I didn't. The
 			buttons are all you get.</p>
 
-		<p>The "parabolic" value applies a constant load across the
-			surface and adjusts the surface to bear that load. In consequence,
-			the surface will adopt a nice parabolic shape constrained by your
-			anchor points. Larger values give a steeper parabola. This is a
-			suitable shape for a roof bearing rock.</p>
-
-		<p>The "catenary" value applies a load across the surface based on
-			the area of the surface and adjusts the surface to bear that load. In
-			consequence, the surface will adopt a catenary shape - the shape of a
-			self-supporting structure. Negative values will create shapes that
-			"hang" from their anchor points under thier own weight.</p>
-
-		<p>The catenary calculations can tend to zip off to infinity,
-			unfortunately, so keep that mouse over the "reset" button.</p>
-
-		<p>If both values are zero, then you'll get a soap-bubble effect.
-			I think what happens is that the engine computes a minimal surface.
-			Of course, if all your anchor points are in one layer and therefore
-			coplanar, you'll wind up with something flat.</p>
-
-
 		<p>
 			You would nomally use this app to generate the <em>roof</em> of a
 			structure. That is, the floor of your awesome house will probably be
@@ -90,11 +69,54 @@
 			when judging whether or not the shape looks too flat or too high.
 		</p>
 
-		<ul>
-			<li>TODO: add a "roof" calculation, where the load is
-				proportional to height below a roof. I belive this will also give
-				catenary shapes, but in a more constrained way.</li>
+		<h3>Parabolic load</h3>
 
+		<p>The "parabolic" value applies a constant load across the
+			surface and adjusts the surface to bear that load. In consequence,
+			the surface will adopt a nice parabolic shape constrained by your
+			anchor points. Larger values give a steeper parabola. This is a
+			suitable shape for a roof bearing rock.</p>
+
+		<h3>Catenary load</h3>
+
+		<p>The "catenary" value applies a load across the surface based on
+			the area of the surface and adjusts the surface to bear that load. In
+			consequence, the surface will adopt a catenary shape - the shape of a
+			self-supporting structure. Negative values will create shapes that
+			"hang" from their anchor points under thier own weight.</p>
+
+		<p>Catenary shapes tend to give a flatter dome than parabolic,
+			with sides that are steeper.</p>
+
+		<p>The catenary calculations can tend to zip off to infinity,
+			unfortunately, so keep that mouse over the "reset" button.</p>
+
+		<h3>Roof load</h3>
+
+		<p>A roof load allows you to set a roof height, applying a load
+			across the surface proportional to how close the surface is to that
+			height. I belive this also produces a catenary shape (hyperbolic
+			cosine). Odd but cool things are likely to happen if you put some
+			anchors above this height and some below it. Negative values for load
+			are likely to send the roof off to infinity.</p>
+
+		<p style="font-size: smaller; margin: 0 2em;">
+			<b>Math nerd alert:</b> At one limit (infinite load), the dome tends
+			to adopt a post-and-lintel shape. This is the shape of cosh(x) for
+			very large x. At the other limit (infinitessimal load, infinite
+			height), the dome tends to adopt a parabolic shape. This is the shape
+			of cosh(x) in the region around zero.
+		</p>
+
+		<h3>No load</h3>
+
+		<p>If both values are zero, then you'll get a soap-bubble effect.
+			I think what happens is that the engine computes a minimal surface.
+			Of course, if all your anchor points are in one layer and therefore
+			coplanar, you'll wind up with something flat.</p>
+
+
+		<ul>
 			<li>TODO: Add a "constant volume" option. I suspect this will
 				create spheres and psudeospheres. The calculation will be a shade
 				tricky.</li>

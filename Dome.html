@@ -128,27 +128,62 @@
 				class="spanbutton" onclick="ctl(this).clickReset()">Reset</span>
 			<div>
 				Parabolic (load-bearing) load <input type="number" value="0"
-					onchange="ctl(this).parabolic = parseFloat($(this).val());" />
+					onchange="ctl(this).parabolic = parseFloat($(this).val());"
+					id="inputParabolic" />
 			</div>
 			<div>
 				Catenary (self-supporting) load <input type="number" value="0"
-					onchange="ctl(this).catenary = parseFloat($(this).val());" />
+					onchange="ctl(this).catenary = parseFloat($(this).val());"
+					id="inputCatenary" />
 			</div>
 			<div>
+				Roof loading (approching a limit) Target Y <input type="number"
+					value="0" onchange="ctl(this).roofY = parseFloat($(this).val());"
+					id="inputRoofY" /> load <input type="number" value="0"
+					onchange="ctl(this).roofLoad = parseFloat($(this).val());"
+					id="inputRoofLoad" />
+			</div>
+
+			<script type="text/javascript">
+			/* sometimes these aren't initialised when the page reloads, and the page gets out of sync with the engine */
+			$(function(){
+				$("#inputParabolic").val(0);
+				$("#inputCatenary").val(0);
+				$("#inputRoofY").val(0);
+				$("#inputRoofLoad").val(0);
+			});
+			</script>
+
+			<div>
 				Show Ideal Blocks <input type="checkbox" checked="true"
-					onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))" />
-				Show Lines <input type="checkbox" checked="true"
-					onchange="ctl(this).showLinesChecked($(this).prop('checked'))" />
+					onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))"
+					id="checkboxShowIdealBlocks" /> Show Lines <input type="checkbox"
+					checked="true"
+					onchange="ctl(this).showLinesChecked($(this).prop('checked'))"
+					id="checkboxShowLines" />
 			</div>
 
 			<div>
 				Show Minecraft Blocks <input type="checkbox"
-					onchange="ctl(this).showMinecraftBlocksChecked($(this).prop('checked'))" />
-				Use half-slabs <input type="checkbox"
-					onchange="ctl(this).useHalfSlabsChecked($(this).prop('checked'))" />
-				Join faces <input type="checkbox"
-					onchange="ctl(this).joinFacesChecked($(this).prop('checked'))" />
+					onchange="ctl(this).showMinecraftBlocksChecked($(this).prop('checked'))"
+					id="checkboxShowMinecraftBlocks" /> Use half-slabs <input
+					type="checkbox"
+					onchange="ctl(this).useHalfSlabsChecked($(this).prop('checked'))"
+					id="checkboxUseHalfSlabs" /> Join faces <input type="checkbox"
+					onchange="ctl(this).joinFacesChecked($(this).prop('checked'))"
+					id="checkboxJoinFaces" />
 			</div>
+			<script type="text/javascript">
+			/* sometimes these aren't initialised when the page reloads, and the page gets out of sync with the engine */
+			$(function(){
+				$("#checkboxShowIdealBlocks").prop('checked', true);
+				$("#checkboxShowLines").prop('checked', true);
+				$("#checkboxShowMinecraftBlocks").prop('checked', false);
+				$("#checkboxUseHalfSlabs").prop('checked', false);
+				$("#checkboxJoinFaces").prop('checked', false);
+			});
+			</script>
+
 		</div>
 	</div>
 	<div class="license">
