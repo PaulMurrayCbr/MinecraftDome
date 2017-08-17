@@ -1,8 +1,7 @@
 /**
- * Copyright Ⓒ 2017 Paul Murray pmurray@bigpond.com
- * Minecraft Dome by Paul Murray is licensed under a 
- * Creative Commons Attribution 4.0 International License.
- * http://creativecommons.org/licenses/by/4.0/
+ * Copyright Ⓒ 2017 Paul Murray pmurray@bigpond.com Minecraft Dome by Paul
+ * Murray is licensed under a Creative Commons Attribution 4.0 International
+ * License. http://creativecommons.org/licenses/by/4.0/
  */
 
 console.log("App.js start");
@@ -32,6 +31,12 @@ function App(element) {
   this.roofY = 0;
   this.roofLoad = 0;
   this.lastUpdate = new Date();
+  this.biggestShift = 0;
+  this.calcX=0;
+  this.calcZ=0;
+  
+  this.calculateProxy = $.proxy(this.calculate, this);
+  
 }
 
 App.prototype.init = function() {
@@ -231,9 +236,10 @@ App.prototype.blockUpdate = function(p, added) {
   this.surfaceUpdate(p, added);
 }
 
-//////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////
 // these functions have the job of adjusting the contents of the Drawer
-// by manipulating the contents of the THREE.GRoup this.displayController.offsetter
+// by manipulating the contents of the THREE.GRoup
+// this.displayController.offsetter
 
 App.prototype.surfaceUpdateAll = function() {
   this.recalculateBounds();
@@ -305,7 +311,7 @@ App.prototype.showMinecraftBlocksChecked = function(v) {
   this.drawer.showMinecraftBlocks(v);
 }
 
-////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////
 // These functions are the actual math.
 
 App.prototype.clickCalculate = function() {
@@ -334,17 +340,46 @@ App.prototype.clickReset = function() {
 App.prototype.calculate = function() {
   if(!this.isCalculating) return;
   
-  var c = this;
-  this.blocks.forEach(function(p) {
-    c.calculateOne(p);
-  });
-
+  var tt = new Date().getTime();
+  
+  while(new Date().getTime() - tt < 50) {
+    if(!this.calcX && this.calcX!=0) {
+      this.calcX = this.bounds.min.x;
+    }
+    else if(this.calcX < this.bounds.min.x) {
+      this.calcX = this.bounds.min.x;
+    }
+    else if(this.calcX > this.bounds.max.x) {
+      this.calcX = this.bounds.min.x;
+      this.calcZ++;
+    }
+    
+    if(!this.calcZ && this.calcZ!=0) {
+      this.calcX = this.bounds.min.x;
+    }
+    else if(this.calcZ < this.bounds.min.z) {
+      this.calcZ = this.bounds.min.z;
+    }
+    else if(this.calcZ > this.bounds.max.z) {
+      this.calcZ = this.bounds.min.z;
+    }
+  
+    var p = up(this.calcX, this.calcZ);
+    if(this.blocks.has(p)) {
+      this.calculateOne(p);
+    }
+    
+    this.calcX ++;
+  }
+  
   if(new Date().getTime() - this.lastUpdate.getTime() > 250) {
+    $("#biggest-shift").text(Math.round(this.biggestShift*100));
     this.surfaceUpdateAll();
+    this.biggestShift = 0;
     this.lastUpdate = new Date();
   }
   
-  window.setTimeout($.proxy(this.calculate, this));
+  window.setTimeout(this.calculateProxy);
 }
 
 App.prototype.isAnchor = function(p) {
@@ -400,8 +435,10 @@ App.prototype.calculateOne = function(p) {
   var weight = 0;
   
   if(this.catenary != 0) {
-    // this is actually not quite right - we can't use avgY, we should use p.y. But
-    // this creates infinities. avgY is ok in the limit of large surfaces with small
+    // this is actually not quite right - we can't use avgY, we should use p.y.
+    // But
+    // this creates infinities. avgY is ok in the limit of large surfaces with
+    // small
     // curvature.
     
     var xpz = new THREE.Vector3( 1, this.getY(up(p.x+1, p.z  ))-avgY,  0);
@@ -429,6 +466,8 @@ App.prototype.calculateOne = function(p) {
   }
   
   var targetY = avgY + this.parabolic / 50 +  this.catenary * weight / 250 + (this.roofY-avgY) * this.roofLoad/200;
+  
+  this.biggestShift = Math.max(this.biggestShift, Math.abs(targetY - currentY));
   
   this.calculatedY.set(p, targetY);
 }
@@ -504,6 +543,97 @@ App.prototype.generateConstructionPlans = function() {
       pre.append('\n');
     }
   }
+}
+
+App.prototype.drawFillRectangle = function() {
+  var inputRectLeft = parseFloat($(this.element).find("#inputRectLeft").val());
+  var inputRectWidth = parseFloat($(this.element).find("#inputRectWidth").val());
+  var inputRectTop = parseFloat($(this.element).find("#inputRectTop").val());
+  var inputRectHeight = parseFloat($(this.element).find("#inputRectHeight").val());
+  var inputRectPower = parseFloat($(this.element).find("#inputRectPower").val());
+  
+  for(var z = Math.floor(inputRectTop); z < inputRectTop + inputRectHeight; z++) {
+    for(var x = Math.floor(inputRectLeft); x <  inputRectLeft + inputRectWidth; x++) {
+      var p = up(x,z);
+      this.blocks.add(p);
+    }
+  }
+  
+  this.surfaceUpdateAll();
+}
+App.prototype.drawClearRectangle = function() {
+  var inputRectLeft = parseFloat($(this.element).find("#inputRectLeft").val());
+  var inputRectWidth = parseFloat($(this.element).find("#inputRectWidth").val());
+  var inputRectTop = parseFloat($(this.element).find("#inputRectTop").val());
+  var inputRectHeight = parseFloat($(this.element).find("#inputRectHeight").val());
+  var inputRectPower = parseFloat($(this.element).find("#inputRectPower").val());
+  
+  for(var z = Math.floor(inputRectTop); z < inputRectTop + inputRectHeight; z++) {
+    for(var x = Math.floor(inputRectLeft); x <  inputRectLeft + inputRectWidth; x++) {
+      var p = up(x,z);
+      this.blocks.delete(p);
+    }
+  }
+  
+  this.surfaceUpdateAll();
+}
+
+App.prototype.drawFillEllipse = function() {
+  var inputRectLeft = parseFloat($(this.element).find("#inputRectLeft").val());
+  var inputRectWidth = parseFloat($(this.element).find("#inputRectWidth").val());
+  var inputRectTop = parseFloat($(this.element).find("#inputRectTop").val());
+  var inputRectHeight = parseFloat($(this.element).find("#inputRectHeight").val());
+  var inputRectPower = parseFloat($(this.element).find("#inputRectPower").val());
+  
+  var xc = inputRectLeft + inputRectWidth / 2;
+  var zc = inputRectTop + inputRectHeight / 2;
+  
+  for(var z = Math.floor(inputRectTop)-1; z < inputRectTop + inputRectHeight+1; z++) {
+    for(var x = Math.floor(inputRectLeft)-1; x <  inputRectLeft + inputRectWidth+1; x++) {
+      
+      r = Math.pow(
+          Math.pow(Math.abs(x-xc)/inputRectWidth*2, inputRectPower) + Math.pow(Math.abs(z-zc)/inputRectHeight*2, inputRectPower),
+          1/inputRectPower
+          );
+      
+      if(r <= 1) { 
+        var p = up(x,z);
+        this.blocks.add(p);
+      }
+    }
+  }
+  
+  this.surfaceUpdateAll();
+}
+
+App.prototype.drawClearEllipse = function() {
+  console.log("attempting to clear an ellipse");
+  
+  var inputRectLeft = parseFloat($(this.element).find("#inputRectLeft").val());
+  var inputRectWidth = parseFloat($(this.element).find("#inputRectWidth").val());
+  var inputRectTop = parseFloat($(this.element).find("#inputRectTop").val());
+  var inputRectHeight = parseFloat($(this.element).find("#inputRectHeight").val());
+  var inputRectPower = parseFloat($(this.element).find("#inputRectPower").val());
+  
+  var xc = inputRectLeft + inputRectWidth / 2;
+  var zc = inputRectTop + inputRectHeight / 2;
+  
+  for(var z = Math.floor(inputRectTop)-1; z < inputRectTop + inputRectHeight+1; z++) {
+    for(var x = Math.floor(inputRectLeft)-1; x <  inputRectLeft + inputRectWidth+1; x++) {
+      
+      r = Math.pow(
+          Math.pow(Math.abs(x-xc)/inputRectWidth*2, inputRectPower) + Math.pow(Math.abs(z-zc)/inputRectHeight*2, inputRectPower),
+          1/inputRectPower
+          );
+      
+      if(r <= 1) { 
+        var p = up(x,z);
+        this.blocks.delete(p);
+      }
+    }
+  }
+  
+  this.surfaceUpdateAll();
 }
 
 console.log("App.js ok");

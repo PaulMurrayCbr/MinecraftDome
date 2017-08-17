@@ -63,10 +63,10 @@
 
 				<div id="ellipse-drawer" style="display: none;">
 					<p>Draw an ellipse or rectangle on the surface</p>
-					X left:<input type="number" value="0" id="inputRectLeft" /> right:<input
-						type="number" value="10" id="inputRectRight" /><br> Z top:<input
-						type="number" value="0" id="inputRectTop" /> bottom:<input
-						type="number" value="10" id="inputRectBottom" /><br> ellipse
+					X left:<input type="number" value="0" id="inputRectLeft" /> width:<input
+						type="number" value="10" id="inputRectWidth" /><br> Z top:<input
+						type="number" value="0" id="inputRectTop" /> height:<input
+						type="number" value="10" id="inputRectHeight" /><br> ellipse
 					power:<input type="number" value="2" step=".1" id="inputRectPower" />
 					<br> <span class="spanbutton"
 						onclick="ctl(this).drawFillRectangle()">Fill Rectangle</span> <span
@@ -130,11 +130,12 @@
 		<div class="parameters-div">
 			Generation parameters <span class="spanbutton"
 				onclick="$('#param-div-hs').toggle()">Hide/Show</span>
-			<div id="param-div-hs" style="display: none;">
+			<div id="param-div-hs">
 
 				<span class="spanbutton calculating"
 					onclick="ctl(this).clickCalculate()">Calculating…</span> <span
-					class="spanbutton" onclick="ctl(this).clickReset()">Reset</span>
+					class="spanbutton" onclick="ctl(this).clickReset()">Reset</span> <span
+					id="biggest-shift"></span>
 				<div>
 					Parabolic (load-bearing) load <input type="number" value="0"
 						onchange="ctl(this).parabolic = parseFloat($(this).val());"
@@ -197,7 +198,7 @@
 			Dome display <span class="spanbutton"
 				onclick="$('#display-div-hs').toggle()">Hide/Show</span>
 
-			<div id="display-div-hs" >
+			<div id="display-div-hs">
 				<div class="display-content"></div>
 				<div class="display-controls">
 					<span id="display-cw" class="spanbutton">⥁</span> <span

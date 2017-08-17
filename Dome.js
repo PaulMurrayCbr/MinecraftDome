@@ -36,6 +36,7 @@ Point.prototype.toString = function() {
 // a set of point objects, used for map keys and set membership
 var uniquePoint = [];
 
+// canonicalizing mapping
 function up(x,z) {
   if(!uniquePoint[x]) {
     uniquePoint[x] = [];
