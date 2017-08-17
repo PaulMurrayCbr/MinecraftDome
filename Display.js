@@ -165,13 +165,13 @@ Display.prototype.downTick = function() {
 
 
 Display.prototype.fwdTick = function() {
-  this.r -= .5;
+  this.r -= 1;
   if(this.r < this.app.bounds.diagonal/2+1) this.r = this.app.bounds.diagonal/2+1;
   this.updateCamera();
 }
 
 Display.prototype.backTick = function() {
-  this.r += .5;
+  this.r += 1;
   if(this.r > this.app.bounds.diagonal * 20) {
     this.r = this.app.bounds.diagonal * 20;
   }

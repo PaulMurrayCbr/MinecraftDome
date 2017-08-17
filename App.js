@@ -291,10 +291,6 @@ App.prototype.layerAllUpdated = function(layer) {
   this.drawer.layerAllUpdated(layer);
 }
 
-App.prototype.useHalfSlabsChecked = function(v) {
-  this.drawer.useHalfSlabs(v);
-}
-
 App.prototype.joinFacesChecked = function(v) {
   this.drawer.joinFaces(v);
 }
@@ -353,17 +349,25 @@ App.prototype.calculate = function() {
   window.setTimeout($.proxy(this.calculate, this));
 }
 
-App.prototype.calculateOne = function(p) {
-  var c = this;
-  var supporting = false;
+App.prototype.isAnchor = function(p) {
+  var supporting = null;
   Layer.prototype.allLayers.forEach(function(l) {
     if (l.enabled && l.blocks.has(p)) {
-      c.calculatedY.set(p, l.getY(p));
-      supporting = true;
-      return;
+      supporting = l;
+      return l;
     }
   });
-  if(supporting) return;
+  return supporting;
+}
+
+App.prototype.calculateOne = function(p) {
+  var c = this;
+  
+  var anchorOf = this.isAnchor(p);
+  if(anchorOf) {
+    c.calculatedY.set(p, anchorOf.getY(p));
+    return;
+  }
   
   var currentY = this.getY(p);
   var neighbours = 0;
@@ -429,6 +433,85 @@ App.prototype.calculateOne = function(p) {
   var targetY = avgY + this.parabolic / 50 +  this.catenary * weight / 250 + (this.roofY-avgY) * this.roofLoad/200;
   
   this.calculatedY.set(p, targetY);
+}
+
+
+App.prototype.generateConstructionPlans = function() {
+  var plan = $(this.element).find(".building-plan.template").clone(true, true);
+  plan.removeClass("template");
+  
+  var newWindow = window.open();
+  
+  console.log(newWindow);
+  console.log(newWindow.document);
+  $(newWindow.document).find("body").append(plan);
+  
+  var container = $(newWindow.document).find(".plan-layers");
+
+  var info = this.drawer.mcComputed;
+  
+  var xoffs = $("#inputChunkX").val();
+  var zoffs = $("#inputChunkZ").val();
+  var yoffs = $("#inputChunkY").val();
+  
+  var tt = $("<tt></tt>");
+  container.append(tt);
+  var pre = $("<pre></pre>");
+  tt.append(pre);
+  for(var y=this.bounds.min.y-1; y <= this.bounds.max.y+2; y++) {
+    console.log("y " + y);
+    pre.append('\n');
+    
+    if((y+yoffs)%8 == 0) {
+      for(var x=this.bounds.min.x-1; x <= this.bounds.max.x+2; x++) {
+        pre.append("==");
+      }
+      pre.append('\n');
+      pre.append('\n');
+    }
+
+    
+    for(var z=this.bounds.min.z-1; z <= this.bounds.max.z+2; z++) {
+      console.log("z " + z);
+      if((z+zoffs)%16 == 0) {
+        for(var x=this.bounds.min.x-1; x <= this.bounds.max.x+2; x++) {
+          pre.append((x+xoffs)%16==0?"+-":'--');
+        }
+        pre.append('\n');
+      }
+      
+      for(var x=this.bounds.min.x-1; x <= this.bounds.max.x+2; x++) {
+        var p = up(x,z);
+        
+        pre.append((x+xoffs)%16==0?"|":' ');
+        
+        var anchorOf = this.isAnchor(p);
+        if(anchorOf && y == Math.round(anchorOf.getY(p))) {
+          pre.append('A');
+        }
+        else if(!this.blocks.has(p)) {
+          pre.append('·');
+        }
+        else {
+          var inf = info.get(up(x,z));
+          console.log(inf);
+          if(inf.minY <= y && inf.maxY >= y) {
+            pre.append('■');
+          }
+          else if(y==inf.minY-1 ){
+            pre.append('○');
+          }
+          else if(y==inf.maxY+1 ){
+            pre.append('○');
+          }
+          else {
+            pre.append('·');
+          }
+        }
+      }
+      pre.append('\n');
+    }
+  }
 }
 
 

@@ -1,8 +1,7 @@
 /**
- * Copyright Ⓒ 2017 Paul Murray pmurray@bigpond.com
- * Minecraft Dome by Paul Murray is licensed under a 
- * Creative Commons Attribution 4.0 International License.
- * http://creativecommons.org/licenses/by/4.0/
+ * Copyright Ⓒ 2017 Paul Murray pmurray@bigpond.com Minecraft Dome by Paul
+ * Murray is licensed under a Creative Commons Attribution 4.0 International
+ * License. http://creativecommons.org/licenses/by/4.0/
  */
 
 console.log("BlockDrawer.js start");
@@ -18,6 +17,7 @@ function BlockDrawer(app, displayController) {
   this.lineContainer = new THREE.Group();
   this.mcContainer = new THREE.Group();
   
+  
   // for each surface point, maintain a Vector3 for it
   this.pointVec = new Map();
   // all grid lines at x = p.x
@@ -26,11 +26,9 @@ function BlockDrawer(app, displayController) {
   this.zline = new Map();
   
   this.mcColumns = new Map();
+  this.mcComputed = new Map(); // for purposes of outputting the result
   
-  this.isUseHalfSlabs = false;
   this.isJoinFaces = false;
-  
-  
 }
 
 
@@ -46,20 +44,15 @@ BlockDrawer.prototype.reset = function() {
   this.pointVec.clear();
   this.xline.clear();
   this.zline.clear();
-  //this.mcColumns.clear();
+  // this.mcColumns.clear();
   
   while(this.blockContainer.children.length >0) this.blockContainer.remove(this.blockContainer.children[0]);
   while(this.lineContainer.children.length >0) this.lineContainer.remove(this.lineContainer.children[0]);
-  //while(this.mcContainer.children.length >0) this.mcContainer.remove(this.mcContainer.children[0]);
+  // while(this.mcContainer.children.length >0)
+  // this.mcContainer.remove(this.mcContainer.children[0]);
 }
 
 BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
-
-BlockDrawer.prototype.uSlabShape = new THREE.BoxGeometry(7/8, 7/16, 7/8);
-BlockDrawer.prototype.uSlabShape.translate(0,7/32,0); // line up the top surface
-
-BlockDrawer.prototype.lSlabShape = new THREE.BoxGeometry(7/8, 7/16, 7/8);
-BlockDrawer.prototype.lSlabShape.translate(0,-7/32,0); // line up the bottom surface
 
 BlockDrawer.prototype.anchorShape = new THREE.OctahedronGeometry(7/8/2);
 
@@ -88,8 +81,6 @@ BlockDrawer.prototype.blockMesh = function() { return new THREE.Mesh(this.blockS
 BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.anchorShape, this.anchorMaterial); }
 
 BlockDrawer.prototype.mcBlockMesh = function() { return new THREE.Mesh(this.blockShape, this.mcMaterial); }
-BlockDrawer.prototype.mcUHSMesh = function() { return new THREE.Mesh(this.uSlabShape, this.mcMaterial); }
-BlockDrawer.prototype.mcLHSMesh = function() { return new THREE.Mesh(this.lSlabShape, this.mcMaterial); }
 
 
 BlockDrawer.prototype.getPointVec = function(p) {
@@ -108,6 +99,14 @@ BlockDrawer.prototype.getMcColumn = function(p) {
     this.mcColumns.set(p, g);
   }
   return this.mcColumns.get(p);  
+}
+
+BlockDrawer.prototype.getMcComputed = function(p) {
+  if(!this.mcComputed.has(p)) {
+    var o = {x: p.x, z: p.z, maxX: 0, minY: 0};
+    this.mcComputed.set(p, o);
+  }
+  return this.mcComputed.get(p);  
 }
 
 BlockDrawer.prototype.getSurfaceBlock = function(p) {
@@ -268,6 +267,9 @@ BlockDrawer.prototype.rebuildMcColumn = function(p) {
   var floorY;
   var ceilY;
   
+  var floorYhs;
+  var ceilYhs;
+  
   if(this.isJoinFaces) {
     floorY = Math.round(minY);
     ceilY = Math.round(maxY);
@@ -286,6 +288,8 @@ BlockDrawer.prototype.rebuildMcColumn = function(p) {
     col.add(m);
   }
   
+  this.getMcComputed(p).minY = floorY;
+  this.getMcComputed(p).maxY = ceilY;
   
 }
 
@@ -333,11 +337,6 @@ BlockDrawer.prototype.surfaceUpdateY = function(p) {
   this.drawer.repaint();
 }
 
-
-BlockDrawer.prototype.useHalfSlabs = function(v) {
-    this.isUseHalfSlabs = v;
-    this.surfaceUpdateAll();
-}
 
 BlockDrawer.prototype.joinFaces = function(v) {
   this.isJoinFaces = v;
