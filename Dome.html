@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+ Copyright Ⓒ 2017 Paul Murray pmurray@bigpond.com
+ Minecraft Dome by Paul Murray is licensed under a 
+ Creative Commons Attribution 4.0 International License.
+ http://creativecommons.org/licenses/by/4.0/
+ -->
 <html>
 <head>
 <title>Minecraft Dome</title>
@@ -21,50 +27,24 @@
 <script src="BlockDrawer.js" type="text/javascript"></script>
 </head>
 <body>
-	<p>
-		This page allows you to generate dome shapes for minecraft. <a
-			href="instructions.html" target="instructions">Read the
-			instructions here</a> (opens in a new tab). Sorry about the UI being a
-		bit rough.
-	</p>
+	<div id="main">
+		<p>
+			This page allows you to generate dome shapes for minecraft. <a
+				href="instructions.html" target="instructions">Read the
+				instructions here</a> (opens in a new tab). Sorry about the UI being a
+			bit rough.
+		</p>
 
-	<div class="surface-mask">
-		Surface Layer <span class="spanbutton hideshow"
-			onclick="ctl(this).hideShowMask()"><span>Open</span></span>
-		<div class="content">
-			<div class="mask-display">
-				<canvas class="ui-widget-content"></canvas>
-			</div>
-			<div class="mask-controls">
-				<span class="spanbutton left-1" onclick="ctl(this).shiftall(-1, 0)">←1</span>
-				<span class="spanbutton left-8" onclick="ctl(this).shiftall(-8, 0)">←8</span>
-				<span class="spanbutton up-1" onclick="ctl(this).shiftall(0, -1)">↑
-					1</span> <span class="spanbutton up-8" onclick="ctl(this).shiftall(0, -8)">↑
-					8</span> <span class="spanbutton down-1"
-					onclick="ctl(this).shiftall(0, 1)">↓1</span> <span
-					class="spanbutton down-8" onclick="ctl(this).shiftall(0, 8)">↓8</span>
-				<span class="spanbutton right-1" onclick="ctl(this).shiftall(1, 0)">→1</span>
-				<span class="spanbutton right-8" onclick="ctl(this).shiftall(8, 0)">→8</span>
-				<span class="spanbutton" onclick="ctl(this).biggerClick()">+</span>
-				<span class="spanbutton" onclick="ctl(this).smallerClick()">-</span>
-			</div>
-		</div>
-	</div>
 
-	<button onclick="ctl(this).addLayer()">Add anchor layer</button>
-	<div id="layers"></div>
 
-	<div class="layer template">
-		Anchor Layer <span class="spanbutton hideshow"
-			onclick="ctl(this).hideshow()"><span>Open</span></span> <span
-			class="spanbutton enabledisable" onclick="ctl(this).enabledisable()"><span>Enabled</span></span>
-		<span class="spanbutton delete" onclick="ctl(this).delete()"><span>Delete</span></span>
-		<div class="content">
-			<div class="layer-display">
-				<canvas class="ui-widget-content"></canvas>
-			</div>
-			<div class="layer-controls">
-				<div class="layer-shift">
+		<div class="surface-mask">
+			Surface Layer <span class="spanbutton hideshow"
+				onclick="ctl(this).hideShowMask()"><span>Open</span></span>
+			<div class="content">
+				<div class="mask-display">
+					<canvas class="ui-widget-content"></canvas>
+				</div>
+				<div class="mask-controls">
 					<span class="spanbutton left-1" onclick="ctl(this).shiftall(-1, 0)">←1</span>
 					<span class="spanbutton left-8" onclick="ctl(this).shiftall(-8, 0)">←8</span>
 					<span class="spanbutton up-1" onclick="ctl(this).shiftall(0, -1)">↑
@@ -77,62 +57,113 @@
 					<span class="spanbutton" onclick="ctl(this).biggerClick()">+</span>
 					<span class="spanbutton" onclick="ctl(this).smallerClick()">-</span>
 				</div>
-				<div class="layer-anchors">
-					<div class="layer-anchor red">
-						<span style="color: red;">⚓</span> X <input class="x"
-							type="number" value="10" /> Z <input class="z" type="number"
-							value="10" /> Y <input class="y" type="number" value="0" />
+			</div>
+		</div>
+
+		<button onclick="ctl(this).addLayer()">Add anchor layer</button>
+		<div id="layers"></div>
+
+		<div class="layer template">
+			Anchor Layer <span class="spanbutton hideshow"
+				onclick="ctl(this).hideshow()"><span>Open</span></span> <span
+				class="spanbutton enabledisable" onclick="ctl(this).enabledisable()"><span>Enabled</span></span>
+			<span class="spanbutton delete" onclick="ctl(this).delete()"><span>Delete</span></span>
+			<div class="content">
+				<div class="layer-display">
+					<canvas class="ui-widget-content"></canvas>
+				</div>
+				<div class="layer-controls">
+					<div class="layer-shift">
+						<span class="spanbutton left-1"
+							onclick="ctl(this).shiftall(-1, 0)">←1</span> <span
+							class="spanbutton left-8" onclick="ctl(this).shiftall(-8, 0)">←8</span>
+						<span class="spanbutton up-1" onclick="ctl(this).shiftall(0, -1)">↑
+							1</span> <span class="spanbutton up-8"
+							onclick="ctl(this).shiftall(0, -8)">↑ 8</span> <span
+							class="spanbutton down-1" onclick="ctl(this).shiftall(0, 1)">↓1</span>
+						<span class="spanbutton down-8" onclick="ctl(this).shiftall(0, 8)">↓8</span>
+						<span class="spanbutton right-1"
+							onclick="ctl(this).shiftall(1, 0)">→1</span> <span
+							class="spanbutton right-8" onclick="ctl(this).shiftall(8, 0)">→8</span>
+						<span class="spanbutton" onclick="ctl(this).biggerClick()">+</span>
+						<span class="spanbutton" onclick="ctl(this).smallerClick()">-</span>
 					</div>
-					<div class="layer-anchor green">
-						<span style="color: green;">⚓</span> X <input class="x"
-							type="number" value="10" /> Z <input class="z" type="number"
-							value="10" /> Y <input class="y" type="number" value="0" />
-					</div>
-					<div class="layer-anchor blue">
-						<span style="color: blue;">⚓</span> X <input class="x"
-							type="number" value="10" /> Z <input class="z" type="number"
-							value="10" /> Y <input class="y" type="number" value="0" />
+					<div class="layer-anchors">
+						<div class="layer-anchor red">
+							<span style="color: red;">⚓</span> X <input class="x"
+								type="number" value="10" /> Z <input class="z" type="number"
+								value="10" /> Y <input class="y" type="number" value="0" />
+						</div>
+						<div class="layer-anchor green">
+							<span style="color: green;">⚓</span> X <input class="x"
+								type="number" value="10" /> Z <input class="z" type="number"
+								value="10" /> Y <input class="y" type="number" value="0" />
+						</div>
+						<div class="layer-anchor blue">
+							<span style="color: blue;">⚓</span> X <input class="x"
+								type="number" value="10" /> Z <input class="z" type="number"
+								value="10" /> Y <input class="y" type="number" value="0" />
+						</div>
 					</div>
 				</div>
+
+			</div>
+		</div>
+		<div class="display-div">
+			<div class="display-content"></div>
+			<div class="display-controls">
+				<span id="display-cw" class="spanbutton">⥁</span> <span
+					id="display-ccw" class="spanbutton">⥀</span> <span id="display-up"
+					class="spanbutton">↑</span> <span id="display-down"
+					class="spanbutton">↓</span> Move <span id="display-fwd"
+					class="spanbutton">▲</span> <span id="display-back"
+					class="spanbutton">▼</span> FOV <span id="display-plus"
+					class="spanbutton">+</span> <span id="display-minus"
+					class="spanbutton">-</span>
+			</div>
+		</div>
+		<div class="parameters-div">
+			<span class="spanbutton calculating"
+				onclick="ctl(this).clickCalculate()">Calculating…</span> <span
+				class="spanbutton" onclick="ctl(this).clickReset()">Reset</span>
+			<div>
+				Parabolic (load-bearing) load <input type="number" value="0"
+					onchange="ctl(this).parabolic = parseFloat($(this).val());" />
+			</div>
+			<div>
+				Catenary (self-supporting) load <input type="number" value="0"
+					onchange="ctl(this).catenary = parseFloat($(this).val());" />
+			</div>
+			<div>
+				Show Ideal Blocks <input type="checkbox" checked="true"
+					onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))" />
+				Show Lines <input type="checkbox" checked="true"
+					onchange="ctl(this).showLinesChecked($(this).prop('checked'))" />
 			</div>
 
+			<div>
+				Show Minecraft Blocks <input type="checkbox"
+					onchange="ctl(this).showMinecraftBlocksChecked($(this).prop('checked'))" />
+				Use half-slabs <input type="checkbox"
+					onchange="ctl(this).useHalfSlabsChecked($(this).prop('checked'))" />
+				Join faces <input type="checkbox"
+					onchange="ctl(this).joinFacesChecked($(this).prop('checked'))" />
+			</div>
 		</div>
 	</div>
-	<div class="display-div">
-		<div class="display-content"></div>
-		<div class="display-controls">
-			<span id="display-cw" class="spanbutton">⥁</span> <span
-				id="display-ccw" class="spanbutton">⥀</span> <span id="display-up"
-				class="spanbutton">↑</span> <span id="display-down"
-				class="spanbutton">↓</span> Move <span id="display-fwd"
-				class="spanbutton">▲</span> <span id="display-back"
-				class="spanbutton">▼</span> FOV <span id="display-plus"
-				class="spanbutton">+</span> <span id="display-minus"
-				class="spanbutton">-</span>
-		</div>
-	</div>
-	<div class="parameters-div">
-		<span class="spanbutton calculating"
-			onclick="ctl(this).clickCalculate()">Calculating…</span> <span
-			class="spanbutton" onclick="ctl(this).clickReset()">Reset</span>
-		<div>
-			Parabolic (load-bearing) load <input type="number" value="0"
-				onchange="ctl(this).parabolic = parseFloat($(this).val());" />
-		</div>
-		<div>
-			Catenary (self-supporting) load <input type="number" value="0"
-				onchange="ctl(this).catenary = parseFloat($(this).val());" />
-		</div>
-		<div>
-			Show Ideal Blocks <input type="checkbox" checked="true" onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))"/>
-			Show Lines <input type="checkbox" checked="true" onchange="ctl(this).showLinesChecked($(this).prop('checked'))"/>
-		</div>
-		
-		<div>
-			Show Minecraft Blocks <input type="checkbox" onchange="ctl(this).showMinecraftBlocksChecked($(this).prop('checked'))"/>
-			Use half-slabs <input type="checkbox" onchange="ctl(this).useHalfSlabsChecked($(this).prop('checked'))"/>
-			Join faces <input type="checkbox" onchange="ctl(this).joinFacesChecked($(this).prop('checked'))"/>
-		</div>
+	<div class="license">
+		<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img
+			alt="Creative Commons License" style="border-width: 0"
+			src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br /> <span
+			xmlns:dct="http://purl.org/dc/terms/"
+			href="http://purl.org/dc/dcmitype/InteractiveResource"
+			property="dct:title" rel="dct:type">Minecraft Dome</span> by <a
+			xmlns:cc="http://creativecommons.org/ns#"
+			href="mailto:pmurray@bigpond.com?Subject=MinecraftDome"
+			property="cc:attributionName" rel="cc:attributionURL">Paul Murray</a>
+		is licensed under a <a rel="license"
+			href="http://creativecommons.org/licenses/by/4.0/">Creative
+			Commons Attribution 4.0 International License</a>.
 	</div>
 </body>
 </html>

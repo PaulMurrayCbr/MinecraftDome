@@ -1,3 +1,12 @@
+/**
+ * Copyright Ⓒ 2017 Paul Murray pmurray@bigpond.com
+ * Minecraft Dome by Paul Murray is licensed under a 
+ * Creative Commons Attribution 4.0 International License.
+ * http://creativecommons.org/licenses/by/4.0/
+ */
+
+#main { margin-bottom: 1em; position: fixed; top: 0; left: 0; bottom: 0; right:0; overflow: scroll;}
+.license { font-size: smaller; font-family: sans-serif; text-align: center; position: fixed; bottom: 0; left:0; right: 0;}
 
 #layers { border: thin solid darkgray; padding: 2px;}
 .layer { border: thin solid darkgray; margin: 2px 0; }
