@@ -39,7 +39,7 @@
 
 		<div class="surface-mask">
 			Surface Layer <span class="spanbutton hideshow"
-				onclick="ctl(this).hideShowMask()"><span>Open</span></span>
+				onclick="ctl(this).hideShowMask()"><span>Hide/Show</span></span>
 			<div class="content">
 				<div class="mask-display">
 					<canvas class="ui-widget-content"></canvas>
@@ -56,16 +56,33 @@
 					<span class="spanbutton right-8" onclick="ctl(this).shiftall(8, 0)">→8</span>
 					<span class="spanbutton" onclick="ctl(this).biggerClick()">+</span>
 					<span class="spanbutton" onclick="ctl(this).smallerClick()">-</span>
+					<span class="spanbutton" onclick="$('#ellipse-drawer').toggle()">Hide/Show
+						drawing controls</span> <span class="spanbutton"
+						onclick="ctl(this).addLayer()">Add anchor Layer</span>
+				</div>
+
+				<div id="ellipse-drawer" style="display: none;">
+					<p>Draw an ellipse or rectangle on the surface</p>
+					X left:<input type="number" value="0" id="inputRectLeft" /> right:<input
+						type="number" value="10" id="inputRectRight" /><br> Z top:<input
+						type="number" value="0" id="inputRectTop" /> bottom:<input
+						type="number" value="10" id="inputRectBottom" /><br> ellipse
+					power:<input type="number" value="2" step=".1" id="inputRectPower" />
+					<br> <span class="spanbutton"
+						onclick="ctl(this).drawFillRectangle()">Fill Rectangle</span> <span
+						class="spanbutton" onclick="ctl(this).drawClearRectangle()">Clear
+						Rectangle</span> <span class="spanbutton"
+						onclick="ctl(this).drawFillEllipse()">Fill Ellipse</span> <span
+						class="spanbutton" onclick="ctl(this).drawClearEllipse()">Clear
+						Ellipse</span>
 				</div>
 			</div>
 		</div>
 
-		<button onclick="ctl(this).addLayer()">Add anchor layer</button>
 		<div id="layers"></div>
-
 		<div class="layer template">
 			Anchor Layer <span class="spanbutton hideshow"
-				onclick="ctl(this).hideshow()"><span>Open</span></span> <span
+				onclick="ctl(this).hideshow()"><span>Hide/Show</span></span> <span
 				class="spanbutton enabledisable" onclick="ctl(this).enabledisable()"><span>Enabled</span></span>
 			<span class="spanbutton delete" onclick="ctl(this).delete()"><span>Delete</span></span>
 			<div class="content">
@@ -109,42 +126,34 @@
 
 			</div>
 		</div>
-		<div class="display-div">
-			<div class="display-content"></div>
-			<div class="display-controls">
-				<span id="display-cw" class="spanbutton">⥁</span> <span
-					id="display-ccw" class="spanbutton">⥀</span> <span id="display-up"
-					class="spanbutton">↑</span> <span id="display-down"
-					class="spanbutton">↓</span> Move <span id="display-fwd"
-					class="spanbutton">▲</span> <span id="display-back"
-					class="spanbutton">▼</span> FOV <span id="display-plus"
-					class="spanbutton">+</span> <span id="display-minus"
-					class="spanbutton">-</span>
-			</div>
-		</div>
-		<div class="parameters-div">
-			<span class="spanbutton calculating"
-				onclick="ctl(this).clickCalculate()">Calculating…</span> <span
-				class="spanbutton" onclick="ctl(this).clickReset()">Reset</span>
-			<div>
-				Parabolic (load-bearing) load <input type="number" value="0"
-					onchange="ctl(this).parabolic = parseFloat($(this).val());"
-					id="inputParabolic" />
-			</div>
-			<div>
-				Catenary (self-supporting) load <input type="number" value="0"
-					onchange="ctl(this).catenary = parseFloat($(this).val());"
-					id="inputCatenary" />
-			</div>
-			<div>
-				Roof loading (approching a limit) Target Y <input type="number"
-					value="0" onchange="ctl(this).roofY = parseFloat($(this).val());"
-					id="inputRoofY" /> load <input type="number" value="0"
-					onchange="ctl(this).roofLoad = parseFloat($(this).val());"
-					id="inputRoofLoad" />
-			</div>
 
-			<script type="text/javascript">
+		<div class="parameters-div">
+			Generation parameters <span class="spanbutton"
+				onclick="$('#param-div-hs').toggle()">Hide/Show</span>
+			<div id="param-div-hs" style="display: none;">
+
+				<span class="spanbutton calculating"
+					onclick="ctl(this).clickCalculate()">Calculating…</span> <span
+					class="spanbutton" onclick="ctl(this).clickReset()">Reset</span>
+				<div>
+					Parabolic (load-bearing) load <input type="number" value="0"
+						onchange="ctl(this).parabolic = parseFloat($(this).val());"
+						id="inputParabolic" />
+				</div>
+				<div>
+					Catenary (self-supporting) load <input type="number" value="0"
+						onchange="ctl(this).catenary = parseFloat($(this).val());"
+						id="inputCatenary" />
+				</div>
+				<div>
+					Roof loading (approching a limit) Target Y <input type="number"
+						value="0" onchange="ctl(this).roofY = parseFloat($(this).val());"
+						id="inputRoofY" /> load <input type="number" value="0"
+						onchange="ctl(this).roofLoad = parseFloat($(this).val());"
+						id="inputRoofLoad" />
+				</div>
+
+				<script type="text/javascript">
 			/* sometimes these aren't initialised when the page reloads, and the page gets out of sync with the engine */
 			$(function(){
 				$("#inputParabolic").val(0);
@@ -154,24 +163,24 @@
 			});
 			</script>
 
-			<div>
-				Show Ideal Blocks <input type="checkbox" checked="true"
-					onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))"
-					id="checkboxShowIdealBlocks" /> Show Lines <input type="checkbox"
-					checked="true"
-					onchange="ctl(this).showLinesChecked($(this).prop('checked'))"
-					id="checkboxShowLines" />
-			</div>
+				<div>
+					Show Ideal Blocks <input type="checkbox" checked="true"
+						onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))"
+						id="checkboxShowIdealBlocks" /> Show Lines <input type="checkbox"
+						checked="true"
+						onchange="ctl(this).showLinesChecked($(this).prop('checked'))"
+						id="checkboxShowLines" />
+				</div>
 
-			<div>
-				Show Minecraft Blocks <input type="checkbox"
-					onchange="ctl(this).showMinecraftBlocksChecked($(this).prop('checked'))"
-					id="checkboxShowMinecraftBlocks" /> Join faces <input
-					type="checkbox"
-					onchange="ctl(this).joinFacesChecked($(this).prop('checked'))"
-					id="checkboxJoinFaces" />
-			</div>
-			<script type="text/javascript">
+				<div>
+					Show Minecraft Blocks <input type="checkbox"
+						onchange="ctl(this).showMinecraftBlocksChecked($(this).prop('checked'))"
+						id="checkboxShowMinecraftBlocks" /> Join faces <input
+						type="checkbox"
+						onchange="ctl(this).joinFacesChecked($(this).prop('checked'))"
+						id="checkboxJoinFaces" />
+				</div>
+				<script type="text/javascript">
 			/* sometimes these aren't initialised when the page reloads, and the page gets out of sync with the engine */
 			$(function(){
 				$("#checkboxShowIdealBlocks").prop('checked', true);
@@ -180,18 +189,43 @@
 				$("#checkboxJoinFaces").prop('checked', false);
 			});
 			</script>
-
+			</div>
 		</div>
 
-		<div class="plan-generation-div">
-			<p>Construction Plans</p>
-			<p>World location of block 0,0,0. This will be used to determine chunk boundaries in the output.</p>
-			X offset: <input type="number" value="0" id="inputChunkX" /> <br />
-			Z offset: <input type="number" value="0" id="inputChunkZ" /> <br />
-			Y offset: <input type="number" value="0" id="inputChunkY" />
-			<br /> <span class="spanbutton"
-				onclick="ctl(this).generateConstructionPlans();">GENERATE CONSTRUCTION PLANS</span>
 
+		<div class="display-div">
+			Dome display <span class="spanbutton"
+				onclick="$('#display-div-hs').toggle()">Hide/Show</span>
+
+			<div id="display-div-hs" >
+				<div class="display-content"></div>
+				<div class="display-controls">
+					<span id="display-cw" class="spanbutton">⥁</span> <span
+						id="display-ccw" class="spanbutton">⥀</span> <span id="display-up"
+						class="spanbutton">↑</span> <span id="display-down"
+						class="spanbutton">↓</span> Move <span id="display-fwd"
+						class="spanbutton">▲</span> <span id="display-back"
+						class="spanbutton">▼</span> FOV <span id="display-plus"
+						class="spanbutton">+</span> <span id="display-minus"
+						class="spanbutton">-</span>
+				</div>
+
+			</div>
+		</div>
+
+
+		<div class="plan-generation-div">
+			Construction Plans <span class="spanbutton"
+				onclick="$('#plan-generation-hs').toggle()">Hide/Show</span>
+			<div id="plan-generation-hs" style="display: none;">
+				<p>World location of block 0,0,0. This will be used to determine
+					chunk boundaries in the output.</p>
+				X:<input type="number" value="0" id="inputChunkX" /> Z:<input
+					type="number" value="0" id="inputChunkZ" /> Y:<input type="number"
+					value="0" id="inputChunkY" /> <br /> <span class="spanbutton"
+					onclick="ctl(this).generateConstructionPlans();">GENERATE
+					CONSTRUCTION PLANS</span>
+			</div>
 		</div>
 
 		<div class="building-plan template">

@@ -23,19 +23,30 @@
 
 		<p>Before I start, please note that there's no save/restore/undo
 			in this version of MinecraftDome. If it gets slow, hit the
-			"Calculating …" button beneath the 3d display window thingy. This
+			"Calculating …" button in the "Generation parameters" thingy. This
 			will put it into "idle" mode. Press the button again to resume
 			calculating. "Reset" also stops calculations and will also zero the
 			calculated heights. This is handy if things start zipping off into
-			infinity.
-		<p>
+			infinity.</p>
+		<p>MinecraftDome seems to work ok for me in Firefox 54.0.1 on a
+			6-year-old MacBook Pro. YMMV.</p>
 		<h2>Defining the surface and its supports</h2>
 		<p>Ok. First, use the "surface layer" area to create a surface
 			layer. Just fill in a circle (for a dome) or a rectangle or
 			something. Use your mouse, for God's sake: it's not difficult to
-			figure out. Make sure your surface is all connected. The calculations
-			are done using a square mesh, so by "connected" I mean the squares
-			need to share a face - diagonals don't count.</p>
+			figure out. Hold down the button and drag. To clear some squares, do
+			it again.</p>
+		<p>Make sure your surface is all connected. The calculations are
+			done using a square mesh, so by "connected" I mean the squares need
+			to share a face - diagonals don't count.</p>
+
+		<p>There is a monumentally clunky set of controlls for drawing
+			rectangles and ellipses - hit the hide/show drawing controls button.
+			it's pretty self-explanatory, except for the "ellipse power" field.
+			This allows you to draw diamonds and hyperellipses. 1 gives a
+			diamond, 2 gives an ellipse, and 2.4 gives a nice hyperellipse.
+			Infinity will give you a rectangle, but there is a separate button
+			for that.</p>
 
 		<p>Next, create an anchor layer. In that anchor layer, anchor down
 			at least one block of the surface by clicking it. Typically you'd do
@@ -47,20 +58,13 @@
 			fooling about with the values of the red/green/blue anchors. All
 			anchors in a given layer will be treated as laying on the plane
 			defined by those points. This allows you to - for instance - create a
-			colonade with agiven elevation at each end.</p>
+			colonade with a given elevation at each end.</p>
 
 		<h2>Fooling about with the dome generation parameters</h2>
 
-		<p>Next, have a look at what's in the awesome greenish 3-d window.
-			Your anchor points are red octahedra. There's a button that says
+		<p>In the generation parmeters section is a button that says
 			"Idle" or "Calculating". Frob it to turn calculations on/off. There's
 			also a reset button, to kill things and put them back to zero.</p>
-
-		<p>There are some buttons to move the view around a bit. Click and
-			hold. If the action gets choppy, turn off the "calculating" thing.
-			Yeah, I could implement some mouse-draggy action, but I didn't. The
-			buttons are all you get.</p>
-
 		<p>
 			You would nomally use this app to generate the <em>roof</em> of a
 			structure. That is, the floor of your awesome house will probably be
@@ -122,25 +126,36 @@
 				tricky.</li>
 		</ul>
 
+		<h2>Display Options</h2>
+		<p>Next, have a look at what's in the awesome greenish 3-d window.
+			Your anchor points are red octahedra.</p>
+
+		<p>There are some buttons to move the view around a bit. Click and
+			hold. If the action gets choppy, turn off the "calculating" thing.
+			Yeah, I could implement some mouse-draggy action, but I didn't. The
+			buttons are all you get.</p>
+		<p>There are some display options. The "Ideal blocks" checkbox
+			turns on some semitransparent cubes centered at exactly the computed
+			grid points.</p>
+		<p>The "lines" checkbox turns on a yellow grid.</p>
+		<p>But you are interested in the "minecraft" checkbox. Turn it on
+			to see cubes placed in columns defining the shape. "Join faces" means
+			that adjacent cubes must connect on a face, as opposed to it being ok
+			to connect on a diagonal.</p>
+
 		<h2>Generating some stuff you can print out and use as a plan for
 			building the actual shape in-game</h2>
 
-		<p>There are some display options. The "Ideal blocks" checkbox
-			turns on some semitransparent cubes centered at exactly the computed
-			grid points. The "lines" checkbox turns on a yellow grid.</p>
-		<p>But you are interested in the "minecraft" checkbox. Turn it on
-			to see cubes placed in columns defining the shape. "Use half slabs"
-			uses half slabs. "Join faces" means that adjacent cubes must connect
-			on a face, as opposed to it being ok to connect on a diagonal.</p>
-
 		<p>When you have the shape you want, or something vaguely like
-			what you want, hit the "generate plans" button. This will produce a
-			set of plans in fixed-width plain text that you can copy/paste or
-			print. The text has a tasteful chequerbord background colour in
-			16*8*16 cubes. Use the "chunk boundary offset" controls to move the
-			starting point of this chequerborad around. Turn on the chunk
-			boundary thingy in game (F3-something, I think) and use it to line up
-			where to place your blocks.</p>
+			what you want, hit the "generate construction plans" button. This
+			will open a new window and produce a set of plans in fixed-width
+			plain text that you can copy/paste or print.</p>
+
+		<p>Lines are drawn every 16 blocksfor the X and Z axwes, and every
+			8 for the Y axis. This should allow you to line up what you are doing
+			with the chunk boundaries in game - use F3-something to see those
+			boundaries. Use the offset controls to offset the generated chuink
+			boundary lines.</p>
 
 		<table>
 			<tr>
@@ -157,8 +172,8 @@
 			</tr>
 			<tr>
 				<td><tt>○</tt></td>
-				<td>An empty space that has a block above or below it. Can help you line
-					things up, and also a fine place for a torch.</td>
+				<td>An empty space that has a block above or below it. Can help
+					you line things up, and also a fine place for a torch.</td>
 			</tr>
 		</table>
 
@@ -175,11 +190,12 @@
 		<p>
 			If you wish to email me about this, you can send it to that address <b>pmurray@bigpond.com</b>.
 			However, I get a metric tonne of spam. Please put "MinecraftDome" in
-			the subject. If you put a space in there, then obviously you have
-			reading comprehension problems and I will ignore your mail because
-			life is too short as it is.
+			the subject.
 		</p>
-		<p>Just letting you know.</p>
+		<p>
+			Repo is at <a href="https://github.com/PaulMurrayCbr/MinecraftDome">GitHub</a>.
+			If you fork, kindly attribute me.
+		</p>
 	</div>
 	<div class="license">
 		<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img

@@ -135,7 +135,6 @@ Layer.prototype.anchorUpdated = function() {
 Layer.prototype.hideshow = function() {
   this.hidden = !this.hidden;
   $(this.element).find(".content").css("display", this.hidden ? "none" : "block");
-  $(this.element).find(".hideshow > span").html(this.hidden ? "Closed" : "Open");
 }
 
 Layer.prototype.enabledisable = function() {

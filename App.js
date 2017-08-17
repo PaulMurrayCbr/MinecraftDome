@@ -190,8 +190,6 @@ App.prototype.hideShowMask = function() {
   this.maskHidden = !this.maskHidden;
   $(this.element).find(".surface-mask .content").css("display",
       this.maskHidden ? "none" : "block");
-  $(this.element).find(".surface-mask .hideshow > span").html(
-      this.maskHidden ? "Closed" : "Open");
 }
 
 App.prototype.shiftall = function(x,z) {
@@ -437,29 +435,25 @@ App.prototype.calculateOne = function(p) {
 
 
 App.prototype.generateConstructionPlans = function() {
+  var xoffs = parseInt($(this.element).find("#inputChunkX").val());
+  var zoffs = parseInt($(this.element).find("#inputChunkZ").val());
+  var yoffs = parseInt($(this.element).find("#inputChunkY").val());
+  
   var plan = $(this.element).find(".building-plan.template").clone(true, true);
   plan.removeClass("template");
   
   var newWindow = window.open();
-  
-  console.log(newWindow);
-  console.log(newWindow.document);
   $(newWindow.document).find("body").append(plan);
   
   var container = $(newWindow.document).find(".plan-layers");
 
   var info = this.drawer.mcComputed;
   
-  var xoffs = $("#inputChunkX").val();
-  var zoffs = $("#inputChunkZ").val();
-  var yoffs = $("#inputChunkY").val();
-  
   var tt = $("<tt></tt>");
   container.append(tt);
   var pre = $("<pre></pre>");
   tt.append(pre);
   for(var y=this.bounds.min.y-1; y <= this.bounds.max.y+2; y++) {
-    console.log("y " + y);
     pre.append('\n');
     
     if((y+yoffs)%8 == 0) {
@@ -472,7 +466,6 @@ App.prototype.generateConstructionPlans = function() {
 
     
     for(var z=this.bounds.min.z-1; z <= this.bounds.max.z+2; z++) {
-      console.log("z " + z);
       if((z+zoffs)%16 == 0) {
         for(var x=this.bounds.min.x-1; x <= this.bounds.max.x+2; x++) {
           pre.append((x+xoffs)%16==0?"+-":'--');
@@ -494,7 +487,6 @@ App.prototype.generateConstructionPlans = function() {
         }
         else {
           var inf = info.get(up(x,z));
-          console.log(inf);
           if(inf.minY <= y && inf.maxY >= y) {
             pre.append('■');
           }
@@ -513,6 +505,5 @@ App.prototype.generateConstructionPlans = function() {
     }
   }
 }
-
 
 console.log("App.js ok");

@@ -8,8 +8,8 @@
 #main { margin-bottom: 1em; position: fixed; top: 0; left: 0; bottom: 0; right:0; overflow: scroll;}
 .license { font-size: smaller; font-family: sans-serif; text-align: center; position: fixed; bottom: 0; left:0; right: 0;}
 
-#layers { border: thin solid darkgray; padding: 2px;}
-.layer { border: thin solid darkgray; margin: 2px 0; }
+#layers { }
+.layer { border: thin solid darkgray; border: thin solid darkgray; margin: 1em 1px 1px 1px; padding: 2px; }
 .template { background: red; display: none; }
 .spanbutton { border: 2px outset darkgray; cursor: pointer; margin: 2px; padding: 2px;}
 .spanbutton:hover { background: blue; color: white; }
@@ -20,19 +20,21 @@
 .surface-mask .mask-display { border: thin solid darkgray; margin: 1px; padding: 1px;}
 .surface-mask .mask-display  canvas { cursor:crosshair; border: thin solid darkgray; }
 
-.layer .layer-controls { border: thin solid darkgray; margin: 1px; padding: 1px; }
-.layer .layer-display { border: thin solid darkgray; margin: 1px; padding: 1px; }
+.layer .layer-controls { border: thin solid darkgray; margin: 1em 1px 1px 1px; padding: 2px; }
+.layer .layer-display { border: thin solid darkgray; margin: 1em 1px 1px 1px; padding: 2px; }
 .layer .layer-display canvas { cursor:crosshair; border: thin solid darkgray; height: 50; width: 50;}
 
 .layer .layer-anchor input { width: 4em;}
 
-.display-div { border: thin solid darkgray; margin: 1px; padding: 1px;}
+.display-div { border: thin solid darkgray; margin: 1em 1px 1px 1px; padding: 2px;}
 .display-div .display-content { border: thin solid darkgray; margin: 1px; padding: 1px;}
 .display-div .display-content .ui-widget-content { height: 50px; width:81px;}
 
 .display-div .display-controls .spanbutton { font-size: 200%; width:1.5em; background: #e0F0FF; }
 .display-div .display-controls .spanbutton:hover {  background: #c0d0FF; }
 
-.plan-generation-div { border: thin solid darkgray; margin: 1px; padding: 1px;}
+.parameters-div { border: thin solid darkgray; margin: 1em 1px 1px 1px; padding: 2px;}
+
+.plan-generation-div { border: thin solid darkgray; margin: 1em 1px 1px 1px; padding: 2px;}
 .building-plan { border: thick solid red; margin: 1em; padding: 1em;}
 
