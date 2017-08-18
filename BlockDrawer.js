@@ -126,6 +126,11 @@ BlockDrawer.prototype.surfaceUpdateAll = function(blocks) {
   while(this.lineContainer.children.length > 0) {
     this.lineContainer.remove(this.lineContainer.children[0]);
   }
+  while(this.mcContainer.children.length > 0) {
+    this.mcContainer.remove(this.mcContainer.children[0]);
+  }
+  
+  this.mcColumns.clear();
   
   var c = this;
   this.app.blocks.forEach(function (p) {
