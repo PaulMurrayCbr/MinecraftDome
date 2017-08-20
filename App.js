@@ -130,7 +130,8 @@ App.prototype.recalculateBounds = function() {
 
 App.prototype.getY = function(p) {
   if(this.calculatedY.has(p)) {
-    return this.calculatedY.get(p);
+    var y = this.calculatedY.get(p);
+    return isNaN(y) ? 0 : y;
   }
   else { 
     return 0;
@@ -297,10 +298,6 @@ App.prototype.layerAllUpdated = function(layer) {
 
 App.prototype.joinFacesChecked = function(v) {
   this.drawer.joinFaces(v);
-}
-
-App.prototype.showIdealBlocksChecked = function(v) {
-  this.drawer.showIdealBlocks(v);
 }
 
 App.prototype.showLinesChecked = function(v) {

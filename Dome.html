@@ -165,12 +165,9 @@
 			</script>
 
 				<div>
-					Show Ideal Blocks <input type="checkbox" checked="true"
-						onchange="ctl(this).showIdealBlocksChecked($(this).prop('checked'))"
-						id="checkboxShowIdealBlocks" /> Show Lines <input type="checkbox"
-						checked="true"
+					<span>Show Lines <input type="checkbox" checked="true"
 						onchange="ctl(this).showLinesChecked($(this).prop('checked'))"
-						id="checkboxShowLines" />
+						id="checkboxShowLines" /></span>
 				</div>
 
 				<div>
@@ -184,7 +181,6 @@
 				<script type="text/javascript">
 			/* sometimes these aren't initialised when the page reloads, and the page gets out of sync with the engine */
 			$(function(){
-				$("#checkboxShowIdealBlocks").prop('checked', true);
 				$("#checkboxShowLines").prop('checked', true);
 				$("#checkboxShowMinecraftBlocks").prop('checked', false);
 				$("#checkboxJoinFaces").prop('checked', false);
@@ -209,6 +205,9 @@
 						class="spanbutton">▼</span> FOV <span id="display-plus"
 						class="spanbutton">+</span> <span id="display-minus"
 						class="spanbutton">-</span>
+				</div>
+				<div>
+					<span id="render-time">render time</span>ms
 				</div>
 
 			</div>
