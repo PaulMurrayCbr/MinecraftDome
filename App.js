@@ -527,7 +527,7 @@ App.prototype.generateConstructionPlans = function() {
             pre.append('■');
           }
           else if(y==inf.minY-1 ){
-            pre.append('○');
+            pre.append('✕');
           }
           else if(y==inf.maxY+1 ){
             pre.append('○');
