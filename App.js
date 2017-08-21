@@ -474,8 +474,6 @@ App.prototype.generateConstructionPlans = function() {
   
   var container = $(newWindow.document).find(".plan-layers");
 
-  var info = this.drawer.mcComputed;
-  
   var tt = $("<tt></tt>");
   container.append(tt);
   var pre = $("<pre></pre>");
@@ -513,7 +511,7 @@ App.prototype.generateConstructionPlans = function() {
           pre.append('·');
         }
         else {
-          var inf = info.get(up(x,z));
+          var inf = this.drawer.getMcComputed(p)
           if(inf.minY <= y && inf.maxY >= y) {
             pre.append('■');
           }
