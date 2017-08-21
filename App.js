@@ -10,7 +10,6 @@ function App(element) {
   this.element = element;
   this.maskHidden = false;
   this.blocks = new Set();
-  this.calculatedY = new Map();
   
   this.bounds = {
       min : {        x : 0,        y : 0,        z : 0      },
@@ -129,13 +128,7 @@ App.prototype.recalculateBounds = function() {
 }
 
 App.prototype.getY = function(p) {
-  if(this.calculatedY.has(p)) {
-    var y = this.calculatedY.get(p);
-    return isNaN(y) ? 0 : y;
-  }
-  else { 
-    return 0;
-  }
+    return isNaN(p.y) ? 0 : p.y;
 }
 
 App.prototype.redrawCanvas = function(x, z) {
@@ -328,7 +321,7 @@ App.prototype.clickCalculate = function() {
 App.prototype.clickReset = function() {
   this.isCalculating = false;
   $(this.element).find(".parameters-div .calculating").text("Idle");
-  this.calculatedY.clear();
+  reset_up();
   this.drawer.reset();
   this.surfaceUpdateAll();
   this.lastUpdate = new Date();
@@ -395,7 +388,7 @@ App.prototype.calculateOne = function(p) {
   
   var anchorOf = this.isAnchor(p);
   if(anchorOf) {
-    c.calculatedY.set(p, anchorOf.getY(p));
+    p.y = anchorOf.getY(p);
     return;
   }
   
@@ -463,10 +456,12 @@ App.prototype.calculateOne = function(p) {
   }
   
   var targetY = avgY + this.parabolic / 50 +  this.catenary * weight / 250 + (this.roofY-avgY) * this.roofLoad/200;
+  if(isNaN(targetY)) targetY = 0;
   
-  this.biggestShift = Math.max(this.biggestShift, Math.abs(targetY - currentY));
-  
-  this.calculatedY.set(p, targetY);
+  if(Math.floor(targetY) != Math.floor(currentY))
+    this.biggestShift ++;
+
+  p.y = targetY;
 }
 
 

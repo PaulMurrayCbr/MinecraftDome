@@ -29,12 +29,16 @@ function Point(x,z) {
   this.z = z;
 }
 
-Point.prototype.toString = function() {
-  return "(" + this.x + ", " + this.z + ")";
-}
-
 // a set of point objects, used for map keys and set membership
 var uniquePoint = [];
+
+function reset_up() {
+  for(i in uniquePoint) {
+    for(j in uniquePoint[i]) {
+      uniquePoint[i][j].y = 0;
+    }
+  }
+}
 
 // canonicalizing mapping
 function up(x,z) {
@@ -42,7 +46,7 @@ function up(x,z) {
     uniquePoint[x] = [];
   }
   if(!uniquePoint[x][z]) {
-    uniquePoint[x][z] = new Point(x,z);
+    uniquePoint[x][z] = new THREE.Vector3(x, 0, z);
   }
   return uniquePoint[x][z];
 }
