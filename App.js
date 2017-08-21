@@ -88,17 +88,17 @@ App.prototype.recalculateBounds = function() {
       b.max.x = p.x;
       b.min.z = p.z;
       b.max.z = p.z;
-      var y = c.getY(p)
+      var y = p.y;
       b.min.y = y;
       b.max.y = y;
 
       gotone = true
     } else {
-      b.min.x = Math.min(b.min.x, p.x)
-      b.max.x = Math.max(b.max.x, p.x)
-      b.min.z = Math.min(b.min.z, p.z)
-      b.max.z = Math.max(b.max.z, p.z)
-      var y = c.getY(p)
+      b.min.x = Math.min(b.min.x, p.x);
+      b.max.x = Math.max(b.max.x, p.x);
+      b.min.z = Math.min(b.min.z, p.z);
+      b.max.z = Math.max(b.max.z, p.z);
+      var y = p.y;
       b.min.y = Math.min(b.min.y, y);
       b.max.y = Math.max(b.max.y, y);
     }
@@ -125,10 +125,6 @@ App.prototype.recalculateBounds = function() {
   b.diagonal = Math.sqrt((b.w.x+1)*(b.w.x+1) + (b.w.y+1)*(b.w.y+1) + (b.w.y+1)*(b.w.y+1));
   
   c.displayController.updateCamera();  
-}
-
-App.prototype.getY = function(p) {
-    return isNaN(p.y) ? 0 : p.y;
 }
 
 App.prototype.redrawCanvas = function(x, z) {
@@ -392,28 +388,28 @@ App.prototype.calculateOne = function(p) {
     return;
   }
   
-  var currentY = this.getY(p);
+  var currentY = p.y;
   var neighbours = 0;
   var d;
   
   var avgY = 0;
   if(this.blocks.has(up(p.x, p.z-1))) {
-    d = this.getY(up(p.x, p.z-1));
+    d = up(p.x, p.z-1).y;
     avgY += d;
     neighbours ++;
   }
   if(this.blocks.has(up(p.x, p.z+1))) {
-    d = this.getY(up(p.x, p.z+1));
+    d = up(p.x, p.z+1).y;
     avgY += d;
     neighbours ++;
   }
   if(this.blocks.has(up(p.x-1, p.z))) {
-    d = this.getY(up(p.x-1, p.z));
+    d = up(p.x-1, p.z).y;
     avgY += d;
     neighbours ++;
   }
   if(this.blocks.has(up(p.x+1, p.z))) {
-    d = this.getY(up(p.x+1, p.z));
+    d = up(p.x+1, p.z).y;
     avgY += d;
     neighbours ++;
   }
@@ -431,10 +427,10 @@ App.prototype.calculateOne = function(p) {
     // small
     // curvature.
     
-    var xpz = new THREE.Vector3( 1, this.getY(up(p.x+1, p.z  ))-avgY,  0);
-    var xmz = new THREE.Vector3(-1, this.getY(up(p.x-1, p.z  ))-avgY,  0);
-    var xzp = new THREE.Vector3( 0, this.getY(up(p.x  , p.z+1))-avgY,  1);
-    var xzm = new THREE.Vector3( 0, this.getY(up(p.x  , p.z-1))-avgY, -1);
+    var xpz = new THREE.Vector3( 1, up(p.x+1, p.z  ).y-avgY,  0);
+    var xmz = new THREE.Vector3(-1, up(p.x-1, p.z  ).y-avgY,  0);
+    var xzp = new THREE.Vector3( 0, up(p.x  , p.z+1).y-avgY,  1);
+    var xzm = new THREE.Vector3( 0, up(p.x  , p.z-1).y-avgY, -1);
     var cross = new THREE.Vector3();
     
     if(this.blocks.has(up(p.x, p.z-1)) && this.blocks.has(up(p.x-1, p.z))) {
