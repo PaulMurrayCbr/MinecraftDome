@@ -22,15 +22,13 @@ function BlockDrawer(app, displayController) {
   // all grid lines at z = p.z
   this.zline = new Map();
   
-  this.mcColumns = new Map();
-  this.mcComputed = new Map(); // for purposes of outputting the result
-  
   this.isJoinFaces = false;
   
   this.fullRenderTimeMs = 0;
+  
+  // I use push and pop to reuse blocks
+  this.mcBlockCache = [];
 }
-
-
 
 BlockDrawer.prototype.init = function() {
   this.container = this.drawer.offsetter;
@@ -41,12 +39,25 @@ BlockDrawer.prototype.init = function() {
 BlockDrawer.prototype.reset = function() {
   this.xline.clear();
   this.zline.clear();
-  // this.mcColumns.clear();
   
   while(this.lineContainer.children.length >0) this.lineContainer.remove(this.lineContainer.children[0]);
-  while(this.mcContainer.children.length >0)
-  this.mcContainer.remove(this.mcContainer.children[0]);
-  this.mcColumns.clear();
+  while(this.mcContainer.children.length >0) {
+    this.mcContainer.remove(this.mcContainer.children[0]);
+  }
+  
+  for(i in uniquePoint) {
+    for(j in uniquePoint[i]) {
+      var col = uniquePoint[i][j].mcColumn;
+      if(col) {
+        while(col.children.length >0) {
+          var block = col.children[0]
+          col.remove(block);
+          this.mcBlockCache.push(block);
+        }
+      }
+    }
+  }
+
 }
 
 BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
@@ -69,24 +80,31 @@ BlockDrawer.prototype.gridMaterial = new THREE.LineBasicMaterial({ color: 0xFFFF
 
 BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.anchorShape, this.anchorMaterial); }
 
-BlockDrawer.prototype.mcBlockMesh = function() { return new THREE.Mesh(this.blockShape, this.mcMaterial); }
+BlockDrawer.prototype.mcBlockMesh = function() { 
+  var mesh = this.mcBlockCache.pop();
+  if(mesh) 
+    return mesh;
+  else
+    return new THREE.Mesh(this.blockShape, this.mcMaterial); 
+}
 
 BlockDrawer.prototype.getMcColumn = function(p) {
-  if(!this.mcColumns.has(p)) {
+
+  if(!p.mcColumn) {
     var g = new THREE.Group();
     g.position.x = p.x;
     g.position.z = p.z;
-    this.mcColumns.set(p, g);
+    p.mcColumn = g;
   }
-  return this.mcColumns.get(p);  
+  return p.mcColumn;  
 }
 
 BlockDrawer.prototype.getMcComputed = function(p) {
-  if(!this.mcComputed.has(p)) {
+  if(!p.mcComputed) {
     var o = {x: p.x, z: p.z, maxX: 0, minY: 0};
-    this.mcComputed.set(p, o);
+    p.mcComputed = o;
   }
-  return this.mcComputed.get(p);  
+  return p.mcComputed;  
 }
 
 BlockDrawer.prototype.surfaceUpdateAll = function() {
@@ -191,8 +209,11 @@ BlockDrawer.prototype.rebuildZline = function(z) {
 
 BlockDrawer.prototype.rebuildMcColumn = function(p) {
   var col = this.getMcColumn(p);
+
   while(col.children.length > 0) {
-    col.remove(col.children[0]);
+    var block = col.children[0]
+    col.remove(block);
+    this.mcBlockCache.push(block);
   }
   
   if(!this.app.blocks.has(p)) {
